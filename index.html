@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<title>AncientVision — Πλήρης Τεχνικός Οδηγός</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;600;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  :root {
+    --teal:   #00e5c8;
+    --gold:   #ffc200;
+    --red:    #ff3030;
+    --dim:    #7a9e9a;
+    --bg:     #070a09;
+    --bg2:    #0c1110;
+    --bg3:    #111816;
+    --border: rgba(0,229,200,0.18);
+    --text:   #d4ede9;
+    --muted:  rgba(212,237,233,0.45);
+  }
+
+  body {
+    font-family:'Arimo',sans-serif;
+    background:#030604;
+    width:794px; margin:0 auto;
+  }
+
+  /* ═══ PAGE ═══ */
+  .page {
+    width:794px; height:1123px;
+    background:var(--bg);
+    position:relative;
+    page-break-before:always;
+    page-break-after:always;
+    break-before:page;
+    break-after:page;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  /* scanline texture on every page */
+  .page::before {
+    content:'';
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,229,200,0.018) 2px, rgba(0,229,200,0.018) 3px),
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,229,200,0.008) 80px, rgba(0,229,200,0.008) 81px);
+  }
+  .page:first-child { page-break-before:auto; break-before:auto; }
+  .page:last-child  { page-break-after:auto;  break-after:auto;  }
+  @media print { body { background:none; } .page { page-break-before:always; page-break-after:always; } }
+
+  /* ═══ COVER ═══ */
+  .cover {
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(0,229,200,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 70%, rgba(255,194,0,0.05) 0%, transparent 70%),
+      linear-gradient(170deg, #04100e 0%, #060d0c 50%, #030806 100%);
+    color:var(--text);
+    padding:52px 56px 0;
+    min-height:1123px;
+  }
+  .cov-topbar { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:48px; }
+  .cov-badge {
+    font-size:9.5px; font-weight:700; letter-spacing:3px; text-transform:uppercase;
+    color:var(--teal); border:1px solid rgba(0,229,200,0.4);
+    padding:5px 14px; border-radius:2px;
+    box-shadow:0 0 12px rgba(0,229,200,0.12), inset 0 0 8px rgba(0,229,200,0.05);
+  }
+  .cov-meta { text-align:right; font-size:10px; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; line-height:2; }
+  .cov-meta strong { color:rgba(212,237,233,0.8); font-size:12px; display:block; }
+
+  .cov-hero { margin-bottom:44px; }
+  .cov-eyebrow {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+    color:var(--teal); margin-bottom:20px;
+  }
+  .cov-eyebrow::before { content:''; width:24px; height:1px; background:var(--teal); opacity:0.6; }
+  .cov-eyebrow::after  { content:''; width:24px; height:1px; background:var(--teal); opacity:0.6; }
+
+  .cov-title {
+    font-family:'Roboto Mono',monospace;
+    font-size:80px; font-weight:700; line-height:0.9; letter-spacing:-2px; text-transform:uppercase;
+    color:#fff;
+    text-shadow:0 0 80px rgba(0,229,200,0.3), 0 0 30px rgba(0,229,200,0.15);
+    margin-bottom:6px;
+  }
+  .cov-title span { color:var(--teal); }
+  .cov-doctype {
+    font-family:'Roboto Mono',monospace;
+    font-size:11px; letter-spacing:4px; text-transform:uppercase; color:var(--muted);
+    margin-bottom:24px; padding-left:2px;
+  }
+  .cov-intro { font-size:14.5px; line-height:1.8; color:rgba(212,237,233,0.65); max-width:580px; }
+  .cov-intro strong { color:var(--gold); font-weight:700; }
+
+  .cov-toc { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .cov-ch {
+    display:flex; align-items:flex-start; gap:12px;
+    background:rgba(0,229,200,0.04);
+    border:1px solid rgba(0,229,200,0.12);
+    border-left:3px solid rgba(0,229,200,0.5);
+    padding:10px 14px;
+  }
+  .cov-ch-num { font-family:'Roboto Mono',monospace; font-size:20px; font-weight:700; color:rgba(0,229,200,0.5); line-height:1; flex-shrink:0; min-width:32px; }
+  .cov-ch-title { font-size:11.5px; font-weight:700; color:rgba(212,237,233,0.85); margin-bottom:2px; }
+  .cov-ch-sub { font-size:9.5px; color:var(--muted); line-height:1.45; }
+
+  .cov-footer {
+    margin:0 -56px; margin-top:auto; height:48px;
+    background:rgba(0,0,0,0.6);
+    border-top:1px solid rgba(0,229,200,0.15);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 56px;
+    font-family:'Roboto Mono',monospace;
+    font-size:8.5px; color:rgba(0,229,200,0.35); letter-spacing:1.5px; text-transform:uppercase;
+  }
+
+  /* ═══ PAGE CHROME ═══ */
+  .ph {
+    height:50px;
+    background:#040807;
+    border-bottom:2px solid rgba(0,229,200,0.25);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 32px; flex-shrink:0; position:relative; z-index:2;
+  }
+  .ph::after {
+    content:''; position:absolute; bottom:-1px; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent 0%, rgba(0,229,200,0.4) 30%, rgba(255,194,0,0.3) 70%, transparent 100%);
+  }
+  .ph-proj { font-family:'Roboto Mono',monospace; font-size:11px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--teal); }
+  .ph-tag {
+    font-family:'Roboto Mono',monospace; font-size:9px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+    color:#040807; background:var(--teal);
+    padding:4px 12px; border-radius:1px;
+  }
+  .ph-pg { font-family:'Roboto Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; }
+
+  .pf {
+    height:34px; margin-top:auto;
+    background:#040807;
+    border-top:1px solid rgba(0,229,200,0.12);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 32px; flex-shrink:0; position:relative; z-index:2;
+    font-family:'Roboto Mono',monospace;
+    font-size:8px; color:rgba(0,229,200,0.25); letter-spacing:1.5px; text-transform:uppercase;
+  }
+
+  /* ═══ CONTENT ═══ */
+  .pc { padding:24px 36px 16px; flex:1; position:relative; z-index:1; }
+
+  .ch-head {
+    display:flex; align-items:center; gap:14px;
+    margin-bottom:20px; padding-bottom:12px;
+    border-bottom:1px solid rgba(0,229,200,0.2);
+  }
+  .ch-icon {
+    width:46px; height:46px; flex-shrink:0;
+    background:rgba(0,229,200,0.08);
+    border:1px solid rgba(0,229,200,0.3);
+    display:flex; align-items:center; justify-content:center; font-size:22px;
+  }
+  .ch-num {
+    font-family:'Roboto Mono',monospace; font-size:9px; font-weight:700;
+    letter-spacing:2.5px; text-transform:uppercase; color:rgba(0,229,200,0.5);
+  }
+  .ch-name { font-size:22px; font-weight:900; color:#fff; line-height:1.1; margin-top:2px; }
+
+  .stitle {
+    font-family:'Roboto Mono',monospace;
+    font-size:9.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--bg); background:var(--teal);
+    display:inline-flex; align-items:center; gap:0;
+    padding:3px 10px 3px 8px;
+    margin:16px 0 8px; position:relative;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+    padding-right:18px;
+  }
+
+  p { font-size:13px; line-height:1.8; color:rgba(212,237,233,0.78); margin-bottom:8px; }
+  p strong { color:var(--teal); font-weight:700; }
+  p em { color:var(--gold); font-style:italic; }
+
+  /* ═══ CODE ═══ */
+  .code-block {
+    background:#020504;
+    border:1px solid rgba(0,229,200,0.15);
+    border-left:3px solid rgba(0,229,200,0.5);
+    padding:12px 16px; margin:10px 0;
+    font-family:'Roboto Mono',monospace; font-size:10.5px; line-height:1.75; color:#8abdb8;
+    position:relative;
+  }
+  .code-block::before {
+    content:'JSON';
+    position:absolute; top:6px; right:10px;
+    font-size:8px; font-weight:700; letter-spacing:2px;
+    color:rgba(0,229,200,0.25); text-transform:uppercase;
+  }
+  .code-block .ck { color:var(--teal); }
+  .code-block .cv { color:var(--gold); }
+  .code-block .cs { color:#a0e890; }
+  .code-block .cc { color:rgba(212,237,233,0.28); font-style:italic; }
+  .code-block .cp { color:rgba(255,194,0,0.6); }
+
+  /* ═══ TABLE ═══ */
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:12px; }
+  thead th {
+    padding:8px 12px; text-align:left;
+    font-family:'Roboto Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  }
+  thead.dark th { background:#020504; color:rgba(0,229,200,0.6); border-bottom:2px solid rgba(0,229,200,0.2); }
+  thead.teal th { background:rgba(0,229,200,0.1); color:var(--teal); border-bottom:2px solid rgba(0,229,200,0.3); }
+  thead.teal th:first-child { background:rgba(0,229,200,0.18); color:#fff; }
+  tbody tr { border-top:1px solid rgba(0,229,200,0.07); }
+  tbody tr:nth-child(even) td { background:rgba(0,229,200,0.03); }
+  tbody tr:hover td { background:rgba(0,229,200,0.06); }
+  tbody td { padding:7px 12px; color:rgba(212,237,233,0.72); line-height:1.45; vertical-align:top; }
+  tbody td:first-child { font-family:'Roboto Mono',monospace; font-weight:600; color:var(--teal); font-size:10.5px; white-space:nowrap; }
+  td code { font-family:'Roboto Mono',monospace; font-size:10px; background:rgba(0,229,200,0.08); border:1px solid rgba(0,229,200,0.2); padding:1px 5px; color:var(--teal); }
+  td .bad  { color:#ff5555; font-weight:700; }
+  td .good { color:#55e090; font-weight:700; }
+
+  /* ═══ PIPELINE ═══ */
+  .pipeline {
+    display:flex; align-items:stretch; margin:12px 0;
+    border:1px solid rgba(0,229,200,0.2);
+    box-shadow:0 0 20px rgba(0,229,200,0.06);
+  }
+  .pnode { flex:1; padding:10px 8px; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:3px; position:relative; }
+  .pnode.n-hw  { background:linear-gradient(170deg,#180a04,#260e06); border-right:1px solid rgba(0,229,200,0.1); }
+  .pnode.n-sig { background:linear-gradient(170deg,#041410,#06201a); border-right:1px solid rgba(0,229,200,0.1); }
+  .pnode.n-fft { background:linear-gradient(170deg,#041814,#041c18); border-right:1px solid rgba(0,229,200,0.1); }
+  .pnode.n-ai  { background:linear-gradient(170deg,#021410,#031a15); border-right:1px solid rgba(0,229,200,0.1); }
+  .pnode.n-out { background:linear-gradient(170deg,#180c02,#281408); }
+  .pnode .ni { font-size:18px; line-height:1; }
+  .pnode .nn { font-family:'Roboto Mono',monospace; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+  .pnode.n-hw  .nn { color:#ff8855; }
+  .pnode.n-sig .nn { color:var(--teal); }
+  .pnode.n-fft .nn { color:#60d0b8; }
+  .pnode.n-ai  .nn { color:var(--teal); }
+  .pnode.n-out .nn { color:var(--gold); }
+  .pnode .nd { font-size:8.5px; line-height:1.35; margin-top:2px; }
+  .pnode.n-hw  .nd { color:rgba(255,136,85,0.5); }
+  .pnode.n-sig .nd { color:rgba(0,229,200,0.45); }
+  .pnode.n-fft .nd { color:rgba(96,208,184,0.45); }
+  .pnode.n-ai  .nd { color:rgba(0,229,200,0.45); }
+  .pnode.n-out .nd { color:rgba(255,194,0,0.45); }
+  .parr { display:flex; align-items:center; background:#020504; padding:0 4px; color:rgba(0,229,200,0.3); font-size:10px; font-family:'Roboto Mono',monospace; }
+
+  /* ═══ NOTES ═══ */
+  .note {
+    background:rgba(0,229,200,0.05); border:1px solid rgba(0,229,200,0.2);
+    border-left:3px solid var(--teal);
+    padding:10px 14px; margin:8px 0; font-size:12.5px; line-height:1.7; color:rgba(212,237,233,0.75);
+  }
+  .note strong { color:var(--teal); }
+  .warn-note {
+    background:rgba(255,48,48,0.06); border:1px solid rgba(255,48,48,0.25);
+    border-left:3px solid var(--red);
+    padding:10px 14px; margin:8px 0; font-size:12.5px; line-height:1.7; color:rgba(255,200,200,0.75);
+  }
+  .warn-note strong { color:var(--red); }
+  .gold-note {
+    background:rgba(255,194,0,0.06); border:1px solid rgba(255,194,0,0.25);
+    border-left:3px solid var(--gold);
+    padding:10px 14px; margin:8px 0; font-size:12.5px; line-height:1.7; color:rgba(255,237,180,0.75);
+  }
+  .gold-note strong { color:var(--gold); }
+
+  /* ═══ SPEC GRID ═══ */
+  .spec-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
+  .spec-card {
+    background:#020504;
+    border:1px solid rgba(0,229,200,0.15);
+    border-top:2px solid rgba(0,229,200,0.4);
+    padding:12px 14px; color:var(--text);
+    position:relative;
+  }
+  .spec-card.gold { border-top-color:rgba(255,194,0,0.6); }
+  .spec-card.gold .sc-val { color:var(--gold); }
+  .sc-label { font-family:'Roboto Mono',monospace; font-size:8.5px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .sc-val { font-family:'Roboto Mono',monospace; font-size:22px; font-weight:700; color:var(--teal); line-height:1; }
+  .sc-val.teal { color:var(--teal); }
+  .sc-sub { font-size:10px; color:var(--muted); margin-top:3px; }
+
+  code { font-family:'Roboto Mono',monospace; font-size:10.5px; background:rgba(0,229,200,0.08); border:1px solid rgba(0,229,200,0.18); padding:1px 5px; color:var(--teal); }
+
+  .badge-row { display:flex; flex-wrap:wrap; gap:5px; margin:8px 0; }
+  .badge { font-family:'Roboto Mono',monospace; font-size:10px; font-weight:600; padding:3px 9px; border:1px solid; letter-spacing:0.5px; }
+  .badge.teal { background:rgba(0,229,200,0.07); border-color:rgba(0,229,200,0.3); color:var(--teal); }
+  .badge.gold { background:rgba(255,194,0,0.07); border-color:rgba(255,194,0,0.3); color:var(--gold); }
+  .badge.red  { background:rgba(255,48,48,0.07); border-color:rgba(255,48,48,0.3); color:#ff6666; }
+  .badge.dark { background:rgba(212,237,233,0.04); border-color:rgba(212,237,233,0.15); color:var(--muted); }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0; }
+  .col-card {
+    background:#020504; border:1px solid rgba(0,229,200,0.12);
+    padding:12px 14px;
+  }
+  .col-card-title { font-family:'Roboto Mono',monospace; font-size:9px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:8px; border-bottom:1px solid rgba(0,229,200,0.15); padding-bottom:5px; }
+  .col-card ul { padding-left:0; list-style:none; }
+  .col-card li { font-size:12px; line-height:1.7; color:rgba(212,237,233,0.68); padding-left:12px; position:relative; }
+  .col-card li::before { content:'›'; position:absolute; left:0; color:rgba(0,229,200,0.5); }
+  .col-card li strong { color:var(--teal); font-weight:700; }
+
+  .step-list { display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+  .step {
+    display:flex; align-items:flex-start; gap:12px;
+    background:#020504; border:1px solid rgba(0,229,200,0.1);
+    border-left:3px solid rgba(0,229,200,0.35);
+    padding:10px 14px;
+  }
+  .step-n {
+    width:24px; height:24px; flex-shrink:0;
+    background:var(--teal); color:#020504;
+    font-family:'Roboto Mono',monospace; font-size:12px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .step-title { font-size:12.5px; font-weight:700; color:#fff; margin-bottom:3px; }
+  .step-desc { font-size:12px; line-height:1.65; color:rgba(212,237,233,0.65); }
+  .step-desc strong { color:var(--teal); font-weight:700; }
+  .step-desc code { font-size:10px; }
+
+  .div { height:1px; background:rgba(0,229,200,0.1); margin:12px 0; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ ΕΞΩΦΥΛΛΟ ══════════════════════════ -->
+<div class="page cover">
+  <div class="cov-topbar">
+    <div class="cov-badge">FLL · Unearthed 2025–26</div>
+    <div class="cov-meta">
+      Παλλάδιο Εκπαιδευτήρια · Θεσσαλονίκη<br>
+      <strong>RoboticAlienz</strong>
+    </div>
+  </div>
+
+  <div class="cov-hero">
+    <div class="cov-eyebrow">📖 Πλήρης Τεχνική Τεκμηρίωση</div>
+    <div class="cov-title">Ancient<br>Vision</div>
+    <div class="cov-doctype">Συσκευή &amp; Εφαρμογή — Πλήρης Οδηγός</div>
+    <div class="cov-intro">
+      Όλα όσα χρειάζεται να ξέρεις για το AncientVision — από το ακατέργαστο σήμα IMU που βγαίνει από τον αισθητήρα
+      μέχρι τον συναγερμό που εμφανίζεται στην οθόνη. Προδιαγραφές υλικού, pipeline firmware,
+      πρωτόκολλο BLE, αρχιτεκτονική εφαρμογής, σύστημα GIS και <strong>μοντέλο AI/ML</strong> — όλα σε ένα έγγραφο.
+    </div>
+  </div>
+
+  <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,237,189,0.35);margin-bottom:10px;">Περιεχόμενα</div>
+  <div class="cov-toc">
+    <div class="cov-ch"><div class="cov-ch-num">01</div><div><div class="cov-ch-title">Υλικό (Hardware)</div><div class="cov-ch-sub">M5StickC Plus 2 · IMU · Φυσικός σχεδιασμός · Προδιαγραφές</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">02</div><div><div class="cov-ch-title">Firmware &amp; Επεξεργασία Σήματος</div><div class="cov-ch-sub">Pipeline 200Hz · FFT · STA/LTA · DIN 4150-3</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">03</div><div><div class="cov-ch-title">Πρωτόκολλο BLE &amp; JSON</div><div class="cov-ch-sub">Διαπραγμάτευση MTU · Σχήμα IMU · Σχήμα Alert</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">04</div><div><div class="cov-ch-title">Αρχιτεκτονική Εφαρμογής</div><div class="cov-ch-sub">Flutter · IndexedStack · State · Services</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">05</div><div><div class="cov-ch-title">Σύστημα Ασφάλειας &amp; Ειδοποιήσεων</div><div class="cov-ch-sub">Συνθήκες alert · Overlay · Metrics · Τύποι κινδύνου</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">06</div><div><div class="cov-ch-title">GIS &amp; Χαρτογράφηση</div><div class="cov-ch-sub">flutter_map · GeoJSON · Shapefile · Offline tiles · GPS</div></div></div>
+    <div class="cov-ch"><div class="cov-ch-num">07</div><div><div class="cov-ch-title">Τεχνητή Νοημοσύνη — VAE</div><div class="cov-ch-sub">Αρχιτεκτονική · Features · Inference · Ανίχνευση ανωμαλίας</div></div></div>
+  </div>
+
+  <div class="cov-footer">
+    <span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · v4.2 · Μάρτιος 2026</span>
+    <span>255 tests · APK 150 MB · Κόστος συσκευής 30€</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 2: ΥΛΙΚΟ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">01 · Υλικό</div><div class="ph-pg">σελ. 2</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">📟</div>
+      <div><div class="ch-num">Κεφάλαιο 01</div><div class="ch-name">Υλικό — M5StickC Plus 2</div></div>
+    </div>
+
+    <div class="stitle">Μικροελεγκτής &amp; Βασικές Προδιαγραφές</div>
+    <div class="spec-grid">
+      <div class="spec-card"><div class="sc-label">SoC</div><div class="sc-val teal" style="font-size:16px;">ESP32-PICO-D4</div><div class="sc-sub">Xtensa dual-core LX6 · 240 MHz</div></div>
+      <div class="spec-card"><div class="sc-label">Μνήμη</div><div class="sc-val teal" style="font-size:16px;">520 KB SRAM</div><div class="sc-sub">4 MB Flash · Χωρίς PSRAM</div></div>
+      <div class="spec-card gold"><div class="sc-label">IMU</div><div class="sc-val" style="font-size:16px;">MPU6886</div><div class="sc-sub">6 αξόνων · 3-αξ επιτάχυνση + 3-αξ γυροσκόπιο</div></div>
+      <div class="spec-card gold"><div class="sc-label">Ρυθμός Δειγματοληψίας</div><div class="sc-val">200 Hz</div><div class="sc-sub">Ρυθμίζεται μέσω καταχωρητή SMPLRT_DIV</div></div>
+    </div>
+
+    <div class="stitle">IMU — Ρύθμιση MPU6886</div>
+    <table>
+      <thead class="teal"><tr><th>Παράμετρος</th><th>Τιμή</th><th>Γιατί</th></tr></thead>
+      <tbody>
+        <tr><td>Εύρος επιταχυνσιόμετρου</td><td>±8 g</td><td>Καλύπτει τόσο μικρο-δονήσεις όσο και συμβάντα κατάρρευσης χωρίς κορεσμό</td></tr>
+        <tr><td>Εύρος γυροσκοπίου</td><td>±2000 dps</td><td>Μέγιστο εύρος — τα δεδομένα περιστροφής χρησιμοποιούνται μόνο για διόρθωση προσανατολισμού Madgwick</td></tr>
+        <tr><td>DLPF cutoff</td><td>99 Hz</td><td>Nyquist για 200Hz δειγματοληψία είναι 100Hz — το DLPF αφαιρεί aliasing πάνω από αυτό</td></tr>
+        <tr><td>Ρυθμός εξόδου</td><td>200 Hz</td><td>Επιλύει συμβάντα διάρκειας 5ms· αναγκαίο για σύλληψη κρουστικών σεισμικών γεγονότων</td></tr>
+        <tr><td>Χρήση RAM firmware</td><td>17,0 %</td><td>Μετά κατανομή όλων των buffers + βιβλιοθηκών</td></tr>
+        <tr><td>Χρήση Flash firmware</td><td>97,5 %</td><td>arduinoFFT + MadgwickAHRS + BLE stack + σειριοποίηση JSON</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">Φυσικός Σχεδιασμός</div>
+    <p>Το περίβλημα της συσκευής έχει <strong>αιχμή/πάσσαλο στο κάτω μέρος</strong> για να μπαίνει στο έδαφος της τάφρου — διασφαλίζει πλήρη επαφή αισθητήρα-εδάφους για ακριβή μέτρηση δονήσεων. Το module M5StickC Plus 2 βρίσκεται από πάνω με την οθόνη του προς τα έξω, ώστε το προσωπικό του site να βλέπει την κατάσταση σε πραγματικό χρόνο χωρίς να ανοίξουν εφαρμογή.</p>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-card-title">Συνδεσιμότητα</div>
+        <ul>
+          <li>Bluetooth BLE 4.2 (ενσωματωμένο ESP32)</li>
+          <li>USB-C για flashing firmware &amp; φόρτιση</li>
+          <li>Ενσωματωμένη μπαταρία LiPo 200 mAh</li>
+          <li>Εμβέλεια BLE: ~10m οπτικής επαφής</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">Οθόνη Συσκευής</div>
+        <ul>
+          <li>TFT έγχρωμο LCD 1.14" (135×240)</li>
+          <li>Δείχνει live τιμή PPV + επίπεδο alert</li>
+          <li>Κουμπί Α: χειροκίνητη επαναφορά alert</li>
+          <li>Κουμπί Β: επανεκκίνηση BLE advertising</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stitle">Βιβλιοθήκες Firmware</div>
+    <div class="badge-row">
+      <span class="badge teal">arduinoFFT v2.x</span>
+      <span class="badge teal">MadgwickAHRS</span>
+      <span class="badge teal">ArduinoBLE / NimBLE</span>
+      <span class="badge dark">M5StickCPlus2 HAL</span>
+      <span class="badge dark">ArduinoJSON v6</span>
+      <span class="badge dark">PlatformIO (σύστημα build)</span>
+    </div>
+
+    <div class="warn-note"><strong>Flash στο 97,5%:</strong> Δεν υπάρχει σχεδόν χώρος για νέα χαρακτηριστικά firmware. Κάθε προσθήκη πρέπει να έρθει σε βάρος κάποιου άλλου στοιχείου, ή χρειάζεται μετάβαση σε M5Stack με περισσότερο Flash.</div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 01 · Υλικό · σελ. 2</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 3: FIRMWARE ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">02 · Firmware &amp; Επεξεργασία Σήματος</div><div class="ph-pg">σελ. 3</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">⚙️</div>
+      <div><div class="ch-num">Κεφάλαιο 02</div><div class="ch-name">Firmware &amp; Pipeline Επεξεργασίας Σήματος</div></div>
+    </div>
+
+    <div class="stitle">Πλήρες Pipeline Επεξεργασίας</div>
+    <div class="pipeline">
+      <div class="pnode n-hw"><div class="ni">📟</div><div class="nn">Ανάγνωση IMU</div><div class="nd">200 Hz<br>XYZ επιτάχ. + γυρ.</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-sig"><div class="ni">🔀</div><div class="nn">Madgwick</div><div class="nd">AHRS προσανατολισμός<br>διόρθωση κλίσης</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-fft"><div class="ni">〰</div><div class="nn">Butterworth</div><div class="nd">0,5–100 Hz<br>bandpass filter</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-ai"><div class="ni">📊</div><div class="nn">FFT 256 σημ.</div><div class="nd">Πεδίο συχνοτήτων<br>ανάλυση 0,78 Hz</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-out"><div class="ni">📡</div><div class="nn">BLE JSON</div><div class="nd">17 πεδία<br>MTU 512 bytes</div></div>
+    </div>
+
+    <div class="stitle">Βήμα-Βήμα Ανάλυση</div>
+    <div class="step-list">
+      <div class="step"><div class="step-n">1</div><div><div class="step-title">Ανάγνωση IMU @ 200 Hz</div><div class="step-desc">Τα ακατέργαστα δεδομένα επιταχυνσιόμετρου (X, Y, Z) και γυροσκοπίου δειγματοληπτούνται 200 φορές/δευτερόλεπτο. Το DLPF εσωτερικά στο MPU6886 ορίζεται στα <strong>99 Hz</strong> — ακριβώς κάτω από το Nyquist — για αποτροπή aliasing πριν τα δεδομένα εγκαταλείψουν το chip.</div></div></div>
+      <div class="step"><div class="step-n">2</div><div><div class="step-title">Φίλτρο Madgwick AHRS</div><div class="step-desc">Ο αλγόριθμος Madgwick συνδυάζει δεδομένα επιταχυνσιόμετρου + γυροσκοπίου για εκτίμηση της <strong>πραγματικής 3D διεύθυνσης</strong> της συσκευής. Διορθώνει την κλίση: αν ο πάσσαλος μπει γωνιασμένος, οι μετρήσεις δόνησης στρέφονται στο αληθινό επίπεδο εδάφους πριν την ανάλυση.</div></div></div>
+      <div class="step"><div class="step-n">3</div><div><div class="step-title">Butterworth Bandpass — 0,5 έως 100 Hz</div><div class="step-desc">Φίλτρο 4ης τάξης Butterworth αφαιρεί ό,τι είναι κάτω από 0,5 Hz (αργή μετατόπιση, βαρύτητα) και πάνω από 100 Hz (ηλεκτρονικός θόρυβος). <strong>Σεισμικά συμβάντα ζουν στα 1–10 Hz, μηχανήματα στα 25–80 Hz</strong> — και τα δύο περνούν καθαρά.</div></div></div>
+      <div class="step"><div class="step-n">4</div><div><div class="step-title">FFT 256 σημείων (arduinoFFT)</div><div class="step-desc">Παράθυρο 256 δειγμάτων (~1,28 δευτερόλεπτα) τροφοδοτείται στο FFT. Ανάλυση συχνότητας = 200Hz / 256 = <strong>0,78 Hz ανά bin</strong>. Εξάγονται η κυρίαρχη συχνότητα και το φασματικό centroid. Αυτό διαχωρίζει ένα διερχόμενο φορτηγό από ένα σεισμικό κύμα — ίδιο PPV, εντελώς διαφορετική φασματική υπογραφή.</div></div></div>
+      <div class="step"><div class="step-n">5</div><div><div class="step-title">Εξαγωγή Χαρακτηριστικών — 17 πεδία</div><div class="step-desc">Από τα φιλτραρισμένα + FFT δεδομένα: <strong>PPV</strong> (mm/s), <strong>RMS</strong>, κυρίαρχη <strong>συχνότητα</strong> (Hz), <strong>crest factor</strong>, φασματικό <strong>centroid</strong>, <strong>kurtosis</strong>, αναλογία <strong>STA/LTA</strong>, <strong>ένταση Arias</strong>, <strong>CAV</strong>, <strong>θερμοκρασία</strong> (°C) και <strong>3 συντελεστές DWT</strong> (dwt1/dwt2/dwt3).</div></div></div>
+    </div>
+
+    <div class="stitle">Λογική Απόφασης Alert (DIN 4150-3 + Triggers)</div>
+    <table>
+      <thead class="dark"><tr><th>Trigger</th><th>Συνθήκη</th><th>Τύπος Κινδύνου</th></tr></thead>
+      <tbody>
+        <tr><td>Κατώφλι PPV</td><td>PPV &gt; 3 mm/s (1–10 Hz) ή &gt; 8 mm/s (50–100 Hz) κατά DIN 4150-3</td><td>Σεισμικό / Δομικό</td></tr>
+        <tr><td>Αναλογία STA/LTA</td><td>Βραχυπρόθεσμος μέσος / Μακροπρόθεσμος μέσος &gt; <strong>4,0</strong></td><td>Έναρξη σεισμικού</td></tr>
+        <tr><td>Kurtosis</td><td>Kurtosis &gt; <strong>3,0</strong> — κρουστική μη-Gaussian κορυφή</td><td>Κρούση (Impact)</td></tr>
+        <tr><td>Crest factor</td><td>Crest &gt; <strong>5,0</strong> — οξύ μονοκόρυφο συμβάν</td><td>Κρουστικό (Impulsive)</td></tr>
+        <tr><td>Συνεχές PPV</td><td>PPV &gt; 2,5 mm/s για &gt;30s — DIN όριο συνεχούς φόρτου</td><td>Δομικό / Μηχάνημα</td></tr>
+        <tr><td>Ανωμαλία VAE (εφαρμογή)</td><td>Reconstruction error &gt; εκπαιδευμένο κατώφλι</td><td>Άγνωστη ανωμαλία</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note"><strong>Υστέρηση (Hysteresis):</strong> Τα alerts δεν σβήνουν αμέσως μόλις η τιμή πέσει κάτω από το κατώφλι. Απαιτούν πτώση στο 70% του κατωφλίου πριν σβήσουν. Αυτό αποτρέπει ταχεία εναλλαγή alert κατά τη διάρκεια ταλαντωτικών συμβάντων.</div>
+
+    <div class="stitle">Watchdog Timer</div>
+    <p>Ένα hardware watchdog τροφοδοτείται σε κάθε iteration του main loop. Αν ο κύριος βρόχος <strong>παγώσει για περισσότερο από 5 δευτερόλεπτα</strong> (π.χ. deadlock BLE stack, κόλλημα I2C), ο ESP32 εκτελεί σκληρό reset και το BLE advertising επανεκκινεί αυτόματα.</p>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 02 · Firmware · σελ. 3</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 4: BLE PROTOCOL ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">03 · Πρωτόκολλο BLE &amp; JSON</div><div class="ph-pg">σελ. 4</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">📡</div>
+      <div><div class="ch-num">Κεφάλαιο 03</div><div class="ch-name">Επικοινωνία BLE &amp; Πρωτόκολλο JSON</div></div>
+    </div>
+
+    <div class="stitle">Το Πρόβλημα MTU — Γιατί Είναι Κρίσιμο</div>
+    <p>Το BLE έχει <strong>προεπιλεγμένο ATT MTU 23 bytes</strong> (20 bytes χρήσιμο payload). Ένα πακέτο JSON IMU είναι ~300 bytes. Στην v4.x αυτό σήμαινε ότι κάθε πακέτο κοβόταν σιωπηλά στα 20 bytes — το JSON ήταν κατεστραμμένο και η εφαρμογή λάμβανε σκουπίδια χωρίς κανένα σφάλμα. Η λύση: αίτημα <strong>MTU 512</strong> αμέσως μετά τη σύνδεση, σε κάθε μονοπάτι σύνδεσης.</p>
+    <div class="code-block">
+<span class="cc">// Flutter — καλείται και στα ΔΥΟ μονοπάτια: κανονική σύνδεση ΚΑΙ "ήδη συνδεδεμένη" συσκευή</span>
+<span class="ck">await</span> device.<span class="ck">requestMtu</span>(<span class="cv">512</span>);
+<span class="cc">// Τυλιγμένο σε try/catch — αποτυχία MTU ΔΕΝ πρέπει να σκοτώσει τη ροή σύνδεσης</span>
+<span class="ck">await</span> Future.delayed(Duration(milliseconds: <span class="cv">500</span>)); <span class="cc">// αναμονή πριν ανακάλυψη services</span>
+    </div>
+    <div class="warn-note"><strong>Κρίσιμο:</strong> Υπάρχουν δύο μονοπάτια σύνδεσης στην εφαρμογή — κανονική σύνδεση και επαναχρησιμοποίηση ήδη συνδεδεμένης συσκευής. Η διαπραγμάτευση MTU πρέπει να γίνει <em>και στα δύο</em> αλλιώς η δεύτερη σύνδεση επιστρέφει σιωπηλά σε 20-byte mode.</div>
+
+    <div class="stitle">Πακέτο Δεδομένων IMU — Σχήμα JSON 17 Πεδίων</div>
+    <div class="code-block">
+<span class="cp">{</span>
+  <span class="ck">"x"</span>:     <span class="cv">0.142</span>,   <span class="cc">// Επιτάχυνση άξονα X  (m/s²)</span>
+  <span class="ck">"y"</span>:     <span class="cv">-0.031</span>,  <span class="cc">// Επιτάχυνση άξονα Y  (m/s²)</span>
+  <span class="ck">"z"</span>:     <span class="cv">9.812</span>,   <span class="cc">// Επιτάχυνση άξονα Z  (m/s²) — περιέχει βαρύτητα</span>
+  <span class="ck">"vib"</span>:   <span class="cv">0.087</span>,   <span class="cc">// Μέτρο δόνησης (m/s²)</span>
+  <span class="ck">"ppv"</span>:   <span class="cv">1.24</span>,    <span class="cc">// Peak Particle Velocity (mm/s) — κύρια μετρική ασφάλειας</span>
+  <span class="ck">"rms"</span>:   <span class="cv">0.412</span>,   <span class="cc">// Τετραγωνική μέση ρίζα επιτάχυνσης</span>
+  <span class="ck">"freq"</span>:  <span class="cv">8.5</span>,     <span class="cc">// Κυρίαρχη συχνότητα (Hz)</span>
+  <span class="ck">"crest"</span>: <span class="cv">2.1</span>,     <span class="cc">// Crest factor = κορυφή / RMS</span>
+  <span class="ck">"cent"</span>:  <span class="cv">12.3</span>,    <span class="cc">// Φασματικό centroid (Hz)</span>
+  <span class="ck">"kurt"</span>:  <span class="cv">2.7</span>,     <span class="cc">// Στατιστική kurtosis — &gt;3 = κρουστικό συμβάν</span>
+  <span class="ck">"stalta"</span>:<span class="cv">1.2</span>,     <span class="cc">// Αναλογία STA/LTA — &gt;4.0 ενεργοποιεί σεισμικό alert</span>
+  <span class="ck">"arias"</span>: <span class="cv">0.0003</span>,  <span class="cc">// Ένταση Arias (m/s) — σωρευτική ενέργεια</span>
+  <span class="ck">"cav"</span>:   <span class="cv">0.041</span>,   <span class="cc">// Σωρευτική Απόλυτη Ταχύτητα (m/s)</span>
+  <span class="ck">"temp"</span>:  <span class="cv">24.6</span>,    <span class="cc">// Θερμοκρασία chip (°C)</span>
+  <span class="ck">"dwt1"</span>:  <span class="cv">0.021</span>,   <span class="cc">// Συντελεστής λεπτομέρειας DWT επιπέδου 1</span>
+  <span class="ck">"dwt2"</span>:  <span class="cv">0.008</span>,   <span class="cc">// Συντελεστής λεπτομέρειας DWT επιπέδου 2</span>
+  <span class="ck">"dwt3"</span>:  <span class="cv">0.003</span>    <span class="cc">// Συντελεστής λεπτομέρειας DWT επιπέδου 3</span>
+<span class="cp">}</span>
+    </div>
+
+    <div class="stitle">Πακέτο Alert — Σχήμα</div>
+    <div class="code-block">
+<span class="cp">{</span>
+  <span class="ck">"level"</span>:   <span class="cs">"WARNING"</span>,      <span class="cc">// "INFO" | "WARNING" | "DANGER" | "CRITICAL"</span>
+  <span class="ck">"message"</span>: <span class="cs">"High PPV detected — seismic origin likely"</span>,
+  <span class="ck">"type"</span>:    <span class="cs">"seismic"</span>       <span class="cc">// seismic | machinery | impact | structural | creep | unknown</span>
+<span class="cp">}</span>
+    </div>
+
+    <div class="stitle">Ασφάλεια JSON — Null Bytes &amp; Αποκοπή</div>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-card-title">Αφαίρεση null bytes</div>
+        <ul><li>Το BLE stack προσθέτει μερικές φορές <code>\x00</code> padding</li><li>Προκαλούν σιωπηλή αποτυχία <code>jsonDecode()</code></li><li>Αφαιρούνται με <code>.replaceAll('\x00','')</code> πριν το parsing</li></ul>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">Έλεγχος αποκοπής</div>
+        <ul><li>Αν το πακέτο τελειώνει χωρίς <code>}</code> → έχει αποκοπεί</li><li>Η διόρθωση MTU το αποτρέπει, αλλά ο έλεγχος παραμένει ως δίχτυ ασφαλείας</li><li>Αποκομμένα πακέτα απορρίπτονται, δεν γίνεται parsing</li></ul>
+      </div>
+    </div>
+
+    <div class="note"><strong>Ροή parsing:</strong> raw bytes → αποκωδικοποίηση UTF-8 → αφαίρεση nulls → έλεγχος τέλους με <code>}</code> → <code>jsonDecode()</code> → cast σε <code>Map&lt;String, dynamic&gt;</code> → δημιουργία αντικειμένου μοντέλου δεδομένων.</div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 03 · Πρωτόκολλο BLE · σελ. 4</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 5: ΑΡΧΙΤΕΚΤΟΝΙΚΗ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">04 · Αρχιτεκτονική Εφαρμογής</div><div class="ph-pg">σελ. 5</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">📱</div>
+      <div><div class="ch-num">Κεφάλαιο 04</div><div class="ch-name">Αρχιτεκτονική Εφαρμογής — Flutter</div></div>
+    </div>
+
+    <div class="stitle">Τεχνολογικό Stack</div>
+    <div class="badge-row">
+      <span class="badge teal">Flutter (Dart)</span>
+      <span class="badge teal">flutter_blue_plus (BLE)</span>
+      <span class="badge teal">flutter_map (χαρτογράφηση)</span>
+      <span class="badge teal">tflite_flutter (AI)</span>
+      <span class="badge dark">file_picker</span>
+      <span class="badge dark">geolocator</span>
+      <span class="badge dark">flutter_cache_manager</span>
+      <span class="badge dark">shared_preferences</span>
+      <span class="badge gold">255 tests επιτυχή</span>
+      <span class="badge gold">APK 150,2 MB</span>
+    </div>
+
+    <div class="stitle">Πλοήγηση — Γιατί IndexedStack</div>
+    <p>Η εφαρμογή χρησιμοποιεί <strong>IndexedStack</strong> για πλοήγηση καρτελών αντί για το προεπιλεγμένο <code>Navigator</code>. Αυτό διατηρεί <em>όλα τα widgets καρτελών ζωντανά ταυτόχρονα</em> — αλλάζει μόνο η ορατότητα. Ο κρίσιμος λόγος: <strong>αν το SafetyView (καρτέλα BLE) καταστρεφόταν κατά την πλοήγηση, η σύνδεση BLE θα διακοπτόταν</strong>. Το IndexedStack το αποτρέπει αυτό.</p>
+
+    <div class="stitle">Αρχιτεκτονική State</div>
+    <table>
+      <thead class="teal"><tr><th>Ιδιοκτήτης State</th><th>Τι κρατάει</th><th>Πώς φτάνει στα children</th></tr></thead>
+      <tbody>
+        <tr><td><code>_DashboardScreenState</code></td><td>Καθολικές σημαίες alert ενεργό/σίγαση, τρέχων τύπος κινδύνου, αντικείμενο AlertMetrics</td><td>Μεταβιβάζεται μέσω callbacks + άμεσων παραμέτρων widget</td></tr>
+        <tr><td><code>SafetyView</code></td><td>Αναφορά BLE συσκευής, live ροή IMU, κατάσταση σύνδεσης, buffer ιστορικού PPV</td><td>Καλεί callbacks γονέα κατά ενεργοποίηση alert</td></tr>
+        <tr><td><code>MapView</code></td><td>Ενεργά layers, ροή θέσης GPS, επιλεγμένο feature</td><td>Αυτόνομο· διαβάζει από GeoJsonService</td></tr>
+        <tr><td><code>VibrationAnomalyService</code></td><td>TFLite interpreter, παράμετροι scaler, τρέχον anomaly score</td><td>Singleton service, καλείται από SafetyView</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">AlertMetrics — Κλάση Δεδομένων</div>
+    <p>Όταν ενεργοποιείται alert, ένα στιγμιότυπο όλων των σχετικών μετρικών αποθηκεύεται σε αντικείμενο <code>AlertMetrics</code> και περνά από το <code>SafetyView</code> στο <code>_DashboardScreenState</code>, το οποίο το μεταβιβάζει στο <code>FullScreenAlertOverlay</code>. Εξασφαλίζει ότι το overlay εμφανίζει πάντα τις τιμές <em>τη στιγμή που ενεργοποιήθηκε το alert</em>.</p>
+    <div class="code-block">
+<span class="cc">// AlertMetrics καταγράφει την κατάσταση τη στιγμή ενεργοποίησης alert</span>
+<span class="ck">class</span> AlertMetrics <span class="cp">{</span>
+  <span class="ck">final</span> <span class="cv">double</span> ppv;           <span class="cc">// mm/s — η τιμή που πέρασε το κατώφλι</span>
+  <span class="ck">final</span> <span class="cv">double</span> freq;          <span class="cc">// Hz — κυρίαρχη συχνότητα</span>
+  <span class="ck">final</span> <span class="cv">double</span> stalta;        <span class="cc">// αναλογία STA/LTA</span>
+  <span class="ck">final</span> <span class="cv">double</span> kurtosis;      <span class="cc">// στατιστική kurtosis</span>
+  <span class="ck">final</span> <span class="cv">double</span> crestFactor;   <span class="cc">// crest factor</span>
+  <span class="ck">final</span> <span class="cv">String</span> hazardType;    <span class="cc">// "seismic" | "machinery" | "impact" | ...</span>
+  <span class="ck">final</span> List&lt;<span class="cv">double</span>&gt; ppvHistory; <span class="cc">// τελευταίες N τιμές PPV για sparkline</span>
+<span class="cp">}</span>
+    </div>
+
+    <div class="stitle">Βασικά Αρχεία &amp; Services (lib/)</div>
+    <table>
+      <thead class="dark"><tr><th>Αρχείο / Service</th><th>Αρμοδιότητα</th><th>Tests</th></tr></thead>
+      <tbody>
+        <tr><td><code>main.dart</code></td><td>Εκκίνηση εφαρμογής, DashboardScreen, IndexedStack, BLE scan, AlertMetrics, FullScreenAlertOverlay</td><td>—</td></tr>
+        <tr><td><code>services/vibration_anomaly_service.dart</code></td><td>Φόρτωση μοντέλου TFLite, εκτέλεση inference, επιστροφή reconstruction error + σημαία ανωμαλίας</td><td>—</td></tr>
+        <tr><td><code>services/geojson_service.dart</code></td><td>Parsing GeoJSON, φόρτωση bundled layers, αποθήκευση/φόρτωση layers χρήστη μέσω SharedPreferences</td><td>5</td></tr>
+        <tr><td><code>services/shapefile_service.dart</code></td><td>Καθαρός Dart δυαδικός parser SHP+DBF, εισαγωγή ZIP, εξαγωγή GeoJSON</td><td>15</td></tr>
+        <tr><td><code>services/cached_tile_provider.dart</code></td><td>Περιτύλιγμα flutter_cache_manager για offline caching tiles χάρτη</td><td>3</td></tr>
+        <tr><td><code>services/wavelet_service.dart</code></td><td>Υπολογισμός DWT, αποθορυβοποίηση, ανίχνευση παροδικών</td><td>23</td></tr>
+        <tr><td><code>services/vibration_metrics_service.dart</code></td><td>Ένταση Arias, CAV, ταξινόμηση πολλαπλών προτύπων</td><td>40</td></tr>
+        <tr><td><code>services/metadata_export_service.dart</code></td><td>Εξαγωγή Dublin Core + CIDOC-CRM για αρχαιολογικά μεταδεδομένα</td><td>22</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 04 · Αρχιτεκτονική · σελ. 5</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 6: ΑΣΦΑΛΕΙΑ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">05 · Σύστημα Ασφάλειας &amp; Ειδοποιήσεων</div><div class="ph-pg">σελ. 6</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">🚨</div>
+      <div><div class="ch-num">Κεφάλαιο 05</div><div class="ch-name">Σύστημα Ασφάλειας &amp; Ειδοποιήσεων</div></div>
+    </div>
+
+    <div class="stitle">Ροή Ενεργοποίησης Alert</div>
+    <div class="step-list">
+      <div class="step"><div class="step-n">1</div><div><div class="step-title">Φτάνει BLE notification → γίνεται parsing του πακέτου IMU</div><div class="step-desc">Κάθε ~5ms φτάνει νέο πακέτο JSON. Το <code>SafetyView</code> κάνει parsing και ανανεώνει την live οθόνη (μετρητής PPV, spectrogram, γράφημα DWT).</div></div></div>
+      <div class="step"><div class="step-n">2</div><div><div class="step-title">Πρώτα τρέχουν οι κανονιστικοί έλεγχοι (κατώφλια firmware)</div><div class="step-desc">Αν το firmware αποφάσισε ήδη να στείλει πακέτο JSON Alert, η εφαρμογή το αντιμετωπίζει ως <span class="badge red" style="font-size:10px;">FIRMWARE ALERT</span>. Το firmware έχει χαμηλότερη καθυστέρηση — τρέχει στα 200Hz χωρίς overhead OS.</div></div></div>
+      <div class="step"><div class="step-n">3</div><div><div class="step-title">Έλεγχοι πλευράς εφαρμογής (VAE + επιπλέον κανόνες)</div><div class="step-desc">Παράλληλα, η εφαρμογή εκτελεί τους δικούς της ελέγχους STA/LTA + kurtosis + crest στα ληφθέντα δεδομένα, καθώς και <strong>VAE inference</strong>. Αυτό είναι το Tier 2 layer — συλλαμβάνει ανωμαλίες που χάνουν οι σταθεροί κανόνες του firmware.</div></div></div>
+      <div class="step"><div class="step-n">4</div><div><div class="step-title">Στιγμιότυπο AlertMetrics + callback στο DashboardScreen</div><div class="step-desc">Το <code>SafetyView</code> καλεί <code>onAlertTriggered(AlertMetrics)</code> μεταβιβάζοντας το πλήρες στιγμιότυπο στην γονική κατάσταση.</div></div></div>
+      <div class="step"><div class="step-n">5</div><div><div class="step-title">Το FullScreenAlertOverlay εμφανίζεται ως Stack overlay</div><div class="step-desc">Το overlay είναι child του <code>Stack</code> που renderάρεται πάνω από ολόκληρο το <code>Scaffold</code> — εμφανίζεται ανεξαρτήτως ποια καρτέλα είναι ενεργή. Glassmorphism στυλ, κόκκινο gradient περίγραμμα, εικονίδιο ανά τύπο κινδύνου.</div></div></div>
+    </div>
+
+    <div class="stitle">Overlay Alert — Στοιχεία</div>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-card-title">Κουτί "ΓΙΑΤΙ ΕΝΕΡΓΟΠΟΙΗΘΗΚΕ"</div>
+        <ul>
+          <li>Δείχνει την ακριβή μετρική που πέρασε το κατώφλι</li>
+          <li>Τιμή + κατώφλι δίπλα-δίπλα (π.χ. PPV: <strong>4,2</strong> / όριο: 3,0 mm/s)</li>
+          <li>Δευτερεύουσες μετρικές: kurtosis, STA/LTA, crest</li>
+          <li>Εφαρμοζόμενη ζώνη συχνοτήτων DIN 4150-3</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">PPV Sparkline</div>
+        <ul>
+          <li>Widget <code>PpvSparkline</code> — custom painter</li>
+          <li>Αποδίδει τελευταίες N τιμές PPV ως mini γράφημα</li>
+          <li>Μεταβάσεις χρώματος: πράσινο → πορτοκαλί → κόκκινο ανά ζώνη</li>
+          <li>Βοηθά να διακριθεί κορυφή από συνεχές συμβάν</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stitle">Καθοδήγηση Ανά Τύπο Κινδύνου</div>
+    <table>
+      <thead class="teal"><tr><th>Τύπος Κινδύνου</th><th>Trigger</th><th>Καθοδήγηση στο overlay</th></tr></thead>
+      <tbody>
+        <tr><td>Σεισμικό</td><td>STA/LTA &gt; 4,0 ή χαμηλής συχν. PPV</td><td>Εκκενώστε αμέσως την τάφρο. Μην ξαναμπείτε για 15 λεπτά.</td></tr>
+        <tr><td>Μηχάνημα</td><td>Συνεχής υψηλής συχν. &gt; 2,5 mm/s</td><td>Εντοπίστε πηγή δόνησης. Σταματήστε μηχανήματα εντός 50m.</td></tr>
+        <tr><td>Κρούση</td><td>Kurtosis &gt; 3, crest &gt; 5</td><td>Εντοπίστηκε μεμονωμένη κρούση. Επιθεωρήστε τοιχώματα τάφρου για νέες ρωγμές.</td></tr>
+        <tr><td>Ερπυσμός εδάφους</td><td>Αργό συνεχές PPV + DWT</td><td>Εντοπίστηκε αργή κίνηση εδάφους. Σημειώστε σημεία αναφοράς. Παρακολουθήστε ανά ώρα.</td></tr>
+        <tr><td>Άγνωστο / VAE</td><td>Reconstruction error &gt; κατώφλι</td><td>Ανιχνεύθηκε ανώμαλο μοτίβο. Προχωρήστε με προσοχή.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">Badges Πηγής στις Κάρτες Ευρημάτων</div>
+    <p>Κάθε καταγεγραμμένο εύρημα στην εφαρμογή φέρει badge πηγής: <span class="badge teal">AI</span> για ευρήματα που ενεργοποιήθηκαν από VAE, <span class="badge dark">Γρήγορο</span> για γρήγορες χειροκίνητες καταχωρήσεις, <span class="badge gold">Χειροκίνητο</span> για πλήρεις εγγραφές χρήστη. Επιτρέπει στην ομάδα να διακρίνει AI-εντοπισμένα συμβάντα από χειροκίνητα καταγεγραμμένα κατά την ανασκόπηση.</p>
+
+    <div class="note"><strong>Κατάσταση σίγασης:</strong> Καθολική σημαία mute στο <code>_DashboardScreenState</code> σιγάζει τον ήχο alert ενώ το οπτικό overlay παραμένει ενεργό. Χρήσιμο όταν ο ήχος θα διατάρασσε λεπτή ανασκαφή.</div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 05 · Ασφάλεια · σελ. 6</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 7: GIS ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">06 · GIS &amp; Χαρτογράφηση</div><div class="ph-pg">σελ. 7</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">🗺️</div>
+      <div><div class="ch-num">Κεφάλαιο 06</div><div class="ch-name">Σύστημα GIS &amp; Χαρτογράφησης</div></div>
+    </div>
+
+    <div class="stitle">Stack Χάρτη</div>
+    <p>Ο χάρτης βασίζεται στο <strong>flutter_map</strong> (τύπου Leaflet για Flutter) με δορυφορικούς tiles <strong>Esri World Imagery</strong> ως προεπιλεγμένο basemap. Ένας διακόπτης εναλλάσσει μεταξύ δορυφορικής και street view OpenStreetMap. Όλη η ανάκτηση tiles διέρχεται μέσω <code>CachedTileProvider</code> για offline υποστήριξη.</p>
+    <div class="badge-row">
+      <span class="badge teal">flutter_map</span>
+      <span class="badge teal">Esri World Imagery (δορυφορικό)</span>
+      <span class="badge teal">OpenStreetMap (οδικό)</span>
+      <span class="badge dark">CachedTileProvider</span>
+      <span class="badge dark">flutter_cache_manager</span>
+      <span class="badge dark">geolocator</span>
+    </div>
+
+    <div class="stitle">Σύστημα Layers — _LayerEntry</div>
+    <p>Κάθε layer δεδομένων (GeoJSON ή Shapefile) τυλίγεται σε αντικείμενο <code>_LayerEntry</code> που κρατά το layer, ένα boolean <code>visible</code> και σημαία <code>isBundled</code>. Το πλαίσιο χάρτη δείχνει checkboxes ανά layer (εναλλαγή ορατότητας) και κουμπί διαγραφής — <em>τα bundled layers δεν έχουν κουμπί διαγραφής</em>.</p>
+    <table>
+      <thead class="teal"><tr><th>Τύπος Layer</th><th>Πηγή</th><th>Διαγραφή</th></tr></thead>
+      <tbody>
+        <tr><td>Bundled GeoJSON</td><td><code>assets/geo/sample_trenches.geojson</code></td><td class="bad">Όχι</td></tr>
+        <tr><td>Bundled Shapefile</td><td><code>assets/geo/sample_excavation.shp.zip</code></td><td class="bad">Όχι</td></tr>
+        <tr><td>GeoJSON χρήστη</td><td>file_picker → GeoJsonService.parse()</td><td class="good">Ναι</td></tr>
+        <tr><td>Shapefile χρήστη</td><td>ZIP → ShapefileService → εξαγωγή GeoJSON</td><td class="good">Ναι</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">ShapefileService — Καθαρός Dart Parser SHP+DBF</div>
+    <p>Τα Shapefiles είναι η βιομηχανική πρότυπη μορφή στο αρχαιολογικό GIS (QGIS, ArcGIS). Το <code>ShapefileService</code> υλοποιεί έναν <strong>καθαρό Dart δυαδικό parser</strong> — χωρίς native code, χωρίς εξωτερική διεργασία. Διαβάζει τα αρχεία <code>.shp</code> (γεωμετρία) και <code>.dbf</code> (χαρακτηριστικά) από ZIP αρχείο και τα εξάγει ως GeoJSON. Υποστηρίζει: Point, PolyLine, Polygon, MultiPoint.</p>
+    <div class="note"><strong>Γιατί καθαρός Dart;</strong> Τα Flutter plugins για Shapefiles είναι ανεπίσημα ή απαιτούν native compilation. Η υλοποίηση Dart λειτουργεί σε όλες τις πλατφόρμες χωρίς ρύθμιση.</div>
+
+    <div class="stitle">Popup Πληροφοριών Feature — Ανίχνευση Ray-Cast</div>
+    <p>Πάτημα οπουδήποτε στον χάρτη ενεργοποιεί ray-cast έλεγχο σε όλα τα ορατά polygon layers. Ο αλγόριθμος ελέγχει αν οι συντεταγμένες του πατήματος βρίσκονται <strong>μέσα σε κάποιο polygon</strong> χρησιμοποιώντας τον κανόνα even-odd — ο ίδιος αλγόριθμος που χρησιμοποιεί το GIS λογισμικό. Αν βρεθεί αποτέλεσμα, μια κάρτα ανεβαίνει από το κάτω μέρος δείχνοντας την ετικέτα/χαρακτηριστικά του feature.</p>
+
+    <div class="stitle">Μπλε Κουκίδα GPS &amp; Offline Tiles</div>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-card-title">Μπλε Κουκίδα GPS</div>
+        <ul>
+          <li>Ροή θέσης <code>geolocator</code></li>
+          <li>Ανανέωση κάθε <strong>2 μέτρα</strong> μετακίνησης</li>
+          <li>Κουμπί "Κέντρωμα σε μένα" (4ο κουμπί χάρτη)</li>
+          <li>Σιωπηλό αν απορριφθεί άδεια — χωρίς crash</li>
+          <li>Κύκλος ακρίβειας γύρω από την κουκίδα</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <div class="col-card-title">Offline Tile Caching</div>
+        <ul>
+          <li><code>CachedTileProvider</code> περιτυλίγει <code>flutter_cache_manager</code></li>
+          <li>Tiles αποθηκεύονται στο δίσκο κατά την πρώτη λήψη</li>
+          <li>Προφόρτωση: περιήγηση στην περιοχή με WiFi πριν την επίσκεψη</li>
+          <li>Λειτουργεί σε airplane mode μετά την προφόρτωση</li>
+          <li>TODO: Προφόρτωση Θεσσαλονίκης πριν τις 21 Μαρ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="stitle">Επιμονή Layers</div>
+    <p>Τα layers που εισάγει ο χρήστης αποθηκεύονται μέσω <code>SharedPreferences</code> ως σειριοποιημένες συμβολοσειρές GeoJSON. Φορτώνονται αυτόματα κατά την επανεκκίνηση της εφαρμογής. Τα bundled layers φορτώνονται πάντα από τα <code>assets/</code> και δεν μπορούν να αφαιρεθούν από τον χρήστη.</p>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 06 · GIS · σελ. 7</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 8: AI/ML ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">07 · Τεχνητή Νοημοσύνη — VAE</div><div class="ph-pg">σελ. 8</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">🧠</div>
+      <div><div class="ch-num">Κεφάλαιο 07</div><div class="ch-name">Τεχνητή Νοημοσύνη — Variational Autoencoder (VAE)</div></div>
+    </div>
+
+    <div class="stitle">Γιατί Autoencoder και όχι Classifier;</div>
+    <p>Ένας classifier (π.χ. "είναι αυτό σεισμικό συμβάν; ναι/όχι") απαιτεί <strong>ετικετιασμένα παραδείγματα κάθε τύπου κινδύνου</strong>. Δεν έχουμε χιλιάδες πραγματικά συμβάντα κατάρρευσης τάφρου για εκπαίδευση. Ο autoencoder ακολουθεί διαφορετική προσέγγιση: <strong>εκπαίδευση μόνο με κανονικά, ασφαλή δεδομένα</strong>. Αν συμβεί κάτι ασυνήθιστο που το μοντέλο δεν έχει ξαναδεί, δεν μπορεί να το ανακατασκευάσει με ακρίβεια — και αυτή η αποτυχία ανακατασκευής <em>είναι</em> το σήμα ανωμαλίας.</p>
+
+    <div class="stitle">Αρχιτεκτονική VAE</div>
+    <div class="pipeline" style="margin-bottom:6px;">
+      <div class="pnode n-hw" style="flex:none;width:60px;"><div class="ni">📥</div><div class="nn">Είσοδος</div><div class="nd">10 χαρ/κά</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-sig"><div class="ni">8</div><div class="nn">Dense</div><div class="nd">Κωδικοποιητής 1</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-sig"><div class="ni">6</div><div class="nn">Dense</div><div class="nd">Κωδικοποιητής 2</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-ai"><div class="ni">4</div><div class="nn">Latent</div><div class="nd">μ + σ (VAE)</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-fft"><div class="ni">6</div><div class="nn">Dense</div><div class="nd">Αποκωδικοποιητής 1</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-fft"><div class="ni">8</div><div class="nn">Dense</div><div class="nd">Αποκωδικοποιητής 2</div></div>
+      <div class="parr">▶</div>
+      <div class="pnode n-out" style="flex:none;width:60px;"><div class="ni">📤</div><div class="nn">Έξοδος</div><div class="nd">10 χαρ/κά</div></div>
+    </div>
+    <p style="font-size:12px;color:#666;margin-bottom:10px;">Αρχιτεκτονική: 10 → 8 → 6 → <strong>latent(4)</strong> → 6 → 8 → 10 · ποσοτικοποίηση float16 · αρχείο μοντέλου: <code>assets/ml/vibration_anomaly.tflite</code></p>
+
+    <div class="stitle">Χαρακτηριστικά Εισόδου (10)</div>
+    <table>
+      <thead class="dark"><tr><th>Χαρακτηριστικό</th><th>Πηγή</th><th>Μονάδα</th><th>Γιατί συμπεριλαμβάνεται</th></tr></thead>
+      <tbody>
+        <tr><td><code>rms</code></td><td>Firmware</td><td>m/s²</td><td>Συνολικό επίπεδο ενέργειας δόνησης</td></tr>
+        <tr><td><code>ppv</code></td><td>Firmware</td><td>mm/s</td><td>Κύρια μετρική ασφάλειας DIN</td></tr>
+        <tr><td><code>freq</code></td><td>Firmware</td><td>Hz</td><td>Κυρίαρχη συχνότητα — διαχωρίζει σεισμικό από μηχάνημα</td></tr>
+        <tr><td><code>crest</code></td><td>Firmware</td><td>—</td><td>Δείκτης κρουστικότητας</td></tr>
+        <tr><td><code>centroid</code></td><td>Firmware</td><td>Hz</td><td>Φασματικό "κέντρο μάζας" — διαφέρει από κυρίαρχη συχν.</td></tr>
+        <tr><td><code>kurtosis</code></td><td>Firmware</td><td>—</td><td>Στατιστικό σχήμα — μη-Gaussian = ανώμαλο</td></tr>
+        <tr><td><code>stalta</code></td><td>Firmware</td><td>—</td><td>Αναλογία ανίχνευσης έναρξης</td></tr>
+        <tr><td><code>arias</code></td><td>Firmware</td><td>m/s</td><td>Σωρευτική ενέργεια — διακρίνει συνεχές από παροδικό</td></tr>
+        <tr><td><code>cav</code></td><td>Firmware</td><td>m/s</td><td>Σωρευτική ταχύτητα — δείκτης πιθανότητας ζημιάς</td></tr>
+        <tr><td><code>temp</code></td><td>Firmware</td><td>°C</td><td>Μεταβολές θερμοκρασίας μπορούν να μιμηθούν δόνηση — χαρακτηριστικό πλαισίου</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">Pipeline Inference</div>
+    <div class="step-list">
+      <div class="step"><div class="step-n">1</div><div><div class="step-title">Κανονικοποίηση με scaler (<code>vibration_scaler.json</code>)</div><div class="step-desc">Κάθε χαρακτηριστικό κανονικοποιείται με προ-υπολογισμένη <strong>μέση τιμή και τυπική απόκλιση</strong> από τα δεδομένα εκπαίδευσης: <code>z = (x - mean) / std</code>. Χωρίς αυτό, χαρακτηριστικά σε διαφορετικές κλίμακες θα κυριαρχούσαν λανθασμένα.</div></div></div>
+      <div class="step"><div class="step-n">2</div><div><div class="step-title">Εκτέλεση TFLite interpreter</div><div class="step-desc">Το ποσοτικοποιημένο float16 μοντέλο φορτώνεται μία φορά κατά την εκκίνηση της εφαρμογής μέσω <code>tflite_flutter</code>. Το inference διαρκεί <strong>&lt;2ms</strong> σε μεσαία Android συσκευή — ουσιαστικά αμελητέο σε σχέση με το διάστημα polling BLE.</div></div></div>
+      <div class="step"><div class="step-n">3</div><div><div class="step-title">Υπολογισμός σφάλματος ανακατασκευής (MSE)</div><div class="step-desc">Σύγκριση 10 τιμών εξόδου του μοντέλου με τις 10 τιμές εισόδου. <strong>Mean Squared Error (MSE)</strong> = μέσος όρος (output[i] - input[i])². Κανονικά δεδομένα = χαμηλό MSE. Ανώμαλα δεδομένα = υψηλό MSE.</div></div></div>
+      <div class="step"><div class="step-n">4</div><div><div class="step-title">Απόφαση κατωφλίου</div><div class="step-desc">Αν MSE &gt; κατώφλι (καθορίζεται κατά την εκπαίδευση ως το 99ο εκατοστημόριο του MSE κανονικών δεδομένων), το δείγμα σημαίνεται ως ανώμαλο και η εφαρμογή ενεργοποιεί alert <span class="badge red" style="font-size:10px;">VAE ΑΝΩΜΑΛΙΑ</span>.</div></div></div>
+    </div>
+
+    <div class="stitle">Θέση &amp; Μέγεθος Αρχείου Μοντέλου</div>
+    <div class="badge-row">
+      <span class="badge teal">assets/ml/vibration_anomaly.tflite</span>
+      <span class="badge teal">assets/ml/vibration_scaler.json</span>
+      <span class="badge gold">&lt;1 MB συνολικά</span>
+      <span class="badge dark">ποσοτικοποίηση float16</span>
+      <span class="badge dark">τρέχει πλήρως offline</span>
+    </div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 07 · Τεχνητή Νοημοσύνη · σελ. 8</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 9: ΕΡΕΥΝΑ & ΠΡΟΒΛΗΜΑ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">08 · Ερωτήσεις Κριτών — Έρευνα &amp; Πρόβλημα</div><div class="ph-pg">σελ. 9</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">🎯</div>
+      <div><div class="ch-num">Κεφάλαιο 08</div><div class="ch-name">Ερωτήσεις Κριτών — Πλήρης Οδηγός</div></div>
+    </div>
+
+    <div class="stitle">Έρευνα &amp; Εντοπισμός Προβλήματος</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πώς εντοπίσατε αυτό το πρόβλημα;</div>
+      <div class="qa-a">Ξεκινήσαμε από ιστορικά στοιχεία: ο <strong>Σπύρος Μαρινάτος</strong> — από τους σπουδαιότερους Έλληνες αρχαιολόγους, ο ανακαλύπτης της Θήρας — σκοτώθηκε σε κατάρρευση τάφρου την <strong>1η Οκτωβρίου 1974</strong>. Δεν υπήρχε κανένα σύστημα έγκαιρης προειδοποίησης. Στη συνέχεια μιλήσαμε με <strong>3 ειδικούς αρχαιολόγους</strong> που επιβεβαίωσαν ότι το πρόβλημα παραμένει άλυτο μέχρι σήμερα.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Ποιοι ήταν οι ειδικοί και τι συνεισέφερε ο καθένας;</div>
+      <div class="qa-a"><strong>Κυριάκος Σγουρόπουλος</strong> (ΔΠΘ) → έδωσε έμφαση στην τρισδιάστατη τεκμηρίωση ευρημάτων και φωτογραμμετρία. <strong>Βασίλης Ευαγγελίδης</strong> (Ινστιτούτο Αθηνά) → ζήτησε αυτοματοποίηση, GIS χαρτογράφηση, και ενσωμάτωση GPS για άμεση καταγραφή θέσης. <strong>Παναγιώτης Μιχαλόπουλος</strong> (ΕΚΠΑ) → επέμεινε στο κόστος: τα υπάρχοντα εργαλεία κοστίζουν χιλιάδες ευρώ και είναι εκτός προϋπολογισμού για μικρές ανασκαφές.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Χρησιμοποιήσατε ακαδημαϊκές πηγές εκτός από τους ειδικούς;</div>
+      <div class="qa-a">Ναι. Η <strong>UK HSE</strong> (Αρχή Υγείας &amp; Ασφάλειας) δηλώνει: "Τα σοβαρότερα ατυχήματα συμβαίνουν κατά τις εκσκαφές τάφρων." Το <strong>CIfA</strong> (Chartered Institute for Archaeologists) αναφέρει ότι η συνεχής παρακολούθηση σπάνια εφαρμόζεται παρά τους γνωστούς κινδύνους. Το <strong>Cambridge University Press</strong> τεκμηριώνει ότι <strong>30% των αρχαιολογικών εκθέσεων έχουν ελλιπή κρίσιμα δεδομένα</strong>. Οι Williams &amp; McDonald (δημοσίευση σεισμικής έρευνας) τεκμηριώνουν ότι ασταθές έδαφος + ακραίες καιρικές συνθήκες = αυξημένος κίνδυνος.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι ακριβώς λύνει το AncientVision; Ποιο είναι το κεντρικό πρόβλημα;</div>
+      <div class="qa-a">Τέσσερα αλληλένδετα προβλήματα: <strong>(1) Ασφάλεια</strong> — κατάρρευση τάφρου χωρίς προειδοποίηση. <strong>(2) Απώλεια δεδομένων</strong> — 30% ελλιπείς εκθέσεις. <strong>(3) Αργή τεκμηρίωση</strong> — περισσότερος χρόνος μέσα στη τάφρο = μεγαλύτερη έκθεση σε κίνδυνο. <strong>(4) Κόστος</strong> — ψηφιακά εργαλεία ανασκαφής κοστίζουν χιλιάδες ευρώ και δεν είναι προσβάσιμα σε μικρές ομάδες.</div>
+    </div>
+
+    <div class="stitle">Λύση &amp; Καινοτομία</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι κάνει τη λύση σας διαφορετική από ό,τι υπάρχει;</div>
+      <div class="qa-a">Τρία πράγματα μαζί, που δεν υπάρχουν σε καμία άλλη λύση: <strong>(1)</strong> Κοστίζει <strong>30€</strong> (vs. χιλιάδες για επαγγελματικό εξοπλισμό). <strong>(2)</strong> Λειτουργεί <strong>χωρίς internet</strong> — η AI τρέχει απευθείας στο κινητό. <strong>(3)</strong> Συνδυάζει ασφάλεια + τεκμηρίωση + GIS + 3D ανακατασκευή σε <strong>μία εφαρμογή</strong>. Δεν είναι απλώς αισθητήρας — είναι πλήρες σύστημα πεδίου.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Γιατί ο αισθητήρας κοστίζει μόνο 30€;</div>
+      <div class="qa-a">Χρησιμοποιούμε το <strong>M5StickC Plus 2</strong> — μια εμπορικά διαθέσιμη συσκευή IoT με ESP32 μικροελεγκτή και ενσωματωμένο IMU MPU6886 6 αξόνων. Δεν χρειαστήκαμε custom hardware. Το firmware που γράψαμε μετέτρεψε μια φτηνή συσκευή ανάπτυξης σε επαγγελματικό αισθητήρα δόνησης.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πώς ξέρετε ότι η λύση σας πραγματικά λειτουργεί;</div>
+      <div class="qa-a">Τριπλή επαλήθευση: <strong>(1)</strong> <strong>255 automated tests</strong> που ελέγχουν κάθε υπολογισμό αυτόματα. <strong>(2)</strong> Τα κατώφλια συναγερμού βασίζονται στο <strong>DIN 4150-3</strong> — το ίδιο γερμανικό πρότυπο που προστατεύει κτίρια πολιτιστικής κληρονομιάς από δονήσεις κατασκευών. Δεν εφεύραμε τα όρια — τα χρησιμοποιεί η βιομηχανία εδώ και δεκαετίες. <strong>(3)</strong> Αν το ML μοντέλο αποτύχει, <strong>7 κανόνες βαρύτητας</strong> (DIN + EPRI + Allen 1978) εξασφαλίζουν ότι η ανίχνευση δεν σταματά ποτέ.</div>
+    </div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 08 · Κριτές Q&amp;A · σελ. 9</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 10: ΤΕΧΝΙΚΕΣ ΕΡΩΤΗΣΕΙΣ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">08 · Ερωτήσεις Κριτών — Τεχνικές</div><div class="ph-pg">σελ. 10</div></div>
+  <div class="pc">
+
+    <div class="stitle" style="margin-top:0;">Τεχνικές Ερωτήσεις — Αισθητήρας &amp; Firmware</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι μετράει ο αισθητήρας και πώς ξέρει αν κάτι είναι επικίνδυνο;</div>
+      <div class="qa-a">Μετράει <strong>δόνηση εδάφους 200 φορές ανά δευτερόλεπτο</strong>. Η κύρια μετρική ασφάλειας είναι το <strong>PPV (Peak Particle Velocity, mm/s)</strong> — η μέγιστη ταχύτητα με την οποία κινείται ένα σωματίδιο εδάφους. Το DIN 4150-3 ορίζει: &lt;0.3 mm/s = ασφαλές, 3.0 mm/s = προειδοποίηση, 5.0 mm/s = κρίσιμο. Επίσης μετράει <strong>συχνότητα δόνησης</strong> (για διάκριση σεισμού από μηχάνημα), kurtosis, STA/LTA, Arias Intensity και CAV — συνολικά <strong>17 μετρικές</strong> ανά πακέτο.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι είναι το BLE και γιατί το default δεν ήταν αρκετό;</div>
+      <div class="qa-a">BLE (Bluetooth Low Energy) έχει <strong>default όριο 20 bytes payload</strong>. Ένα JSON με 17 μετρικές είναι ~300 bytes. Στην παλιά έκδοση (v4.x) τα μηνύματα κόβονταν σιωπηλά — χωρίς error, χωρίς προειδοποίηση. Νομίζαμε ότι λαμβάναμε δεδομένα ενώ λαμβάναμε σκουπίδια. Λύση: <strong>MTU negotiation στα 512 bytes</strong> αμέσως μετά τη σύνδεση, με 500ms καθυστέρηση πριν την ανακάλυψη services.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Γιατί κάνετε FFT στο κινητό και όχι στον αισθητήρα;</div>
+      <div class="qa-a">Ο αισθητήρας έχει <strong>Flash memory 97,5% γεμάτη</strong> — δεν χωράει άλλος κώδικας. Η αρχιτεκτονική v5 διαχωρίζει: <em>αισθητήρας = συλλογή δεδομένων μόνο, κινητό = ανάλυση</em>. Αυτό έλυσε και το πρόβλημα του Flash και μας έδωσε <strong>256-point FFT στο κινητό</strong> — ανάλυση συχνότητας 0,78 Hz ανά bin, αδύνατη να χωρέσει στον αισθητήρα.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι γίνεται αν η συσκευή κολλήσει κατά τη διάρκεια ανασκαφής;</div>
+      <div class="qa-a"><strong>Watchdog timer 5 δευτερολέπτων</strong>. Αν ο main loop του ESP32 δεν εκτελεστεί εντός 5s (π.χ. deadlock BLE stack, κόλλημα I2C), η συσκευή κάνει <em>αυτόματο hard reset</em> και επανεκκινεί το BLE advertising. Αυτό το ανακαλύψαμε μετά από πραγματικό πάγωμα κατά δοκιμή — στην v4.x δεν το γνωρίζαμε καν ότι η συσκευή είχε κολλήσει.</div>
+    </div>
+
+    <div class="stitle">Τεχνικές Ερωτήσεις — AI &amp; Ανίχνευση</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Γιατί χρησιμοποιείτε VAE και όχι απλό neural network classifier;</div>
+      <div class="qa-a">Ένας classifier χρειάζεται <strong>ετικετιασμένα παραδείγματα κάθε τύπου κινδύνου</strong>. Δεν έχουμε χιλιάδες καταγεγραμμένες καταρρεύσεις τάφρου. Ο VAE εκπαιδεύεται <strong>μόνο με κανονικές δονήσεις</strong> — μαθαίνει τι είναι "φυσιολογικό". Όταν δει κάτι που δεν μπορεί να ανακατασκευάσει, αυτό ΕΙΝΑΙτο σήμα ανωμαλίας. Δεν χρειάζεται να γνωρίζει εκ των προτέρων πώς μοιάζει η κατάρρευση.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι γίνεται αν το ML μοντέλο αποτύχει να φορτώσει;</div>
+      <div class="qa-a">Υπάρχει <strong>rule-based fallback engine</strong> με 7 σταθμισμένες μετρικές: PPV (30%), STA/LTA (20%), CAV (15%), Crest factor (10%), Kurtosis (10%), Σεισμική συχνότητα (10%), RMS (5%). Βασίζεται σε τρία διεθνή πρότυπα: <strong>DIN 4150-3, EPRI, Allen (1978)</strong>. Η ανίχνευση κινδύνου δεν σταματά ποτέ — ακόμα και αν το TFLite αποτύχει εντελώς.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πώς αποφεύγετε ψευδείς συναγερμούς από φορτηγά ή μηχανήματα;</div>
+      <div class="qa-a">Το σύστημα <strong>ταξινομεί τον τύπο δόνησης</strong> βάσει συχνότητας: σεισμός = 1–10 Hz, μηχάνημα = 25–80 Hz. Ένα φορτηγό εντοπίζεται ως "Μηχάνημα" και εμφανίζεται ειδική καθοδήγηση ("σταματήστε μηχανήματα εντός 50m"), όχι "εκκενώστε αμέσως". Επιπλέον η εφαρμογή έχει <strong>υστέρηση (hysteresis) 70%</strong> — το alert δεν σβήνει μόλις η τιμή πέσει κάτω από το κατώφλι, αλλά μόνο στο 70% αυτού.</div>
+    </div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 08 · Κριτές Q&amp;A · σελ. 10</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 11: ΑΝΤΙΚΤΥΠΟΣ & ΜΕΛΛΟΝ ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">08 · Ερωτήσεις Κριτών — Αντίκτυπος &amp; Μέλλον</div><div class="ph-pg">σελ. 11</div></div>
+  <div class="pc">
+
+    <div class="stitle" style="margin-top:0;">Αντίκτυπος &amp; Κοινοποίηση</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Ποιοι ωφελούνται από αυτή τη λύση;</div>
+      <div class="qa-a">Πρωτίστως <strong>αρχαιολόγοι</strong> σε μικρές ανασκαφές χωρίς προϋπολογισμό για επαγγελματικό εξοπλισμό. Δευτερευόντως: <strong>εργάτες κατασκευών</strong> σε τάφρους αγωγών/καλωδίων, <strong>ομάδες διάσωσης</strong> σε κατεστραμμένα κτίρια, <strong>ορυχεία μικρής κλίμακας</strong> σε αναπτυσσόμενες χώρες. Οπουδήποτε κάποιος εργάζεται κάτω από έδαφος χωρίς επαγγελματικό σύστημα παρακολούθησης.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πώς μοιραστήκατε τη λύση σας;</div>
+      <div class="qa-a">Παρουσιάσαμε το σύστημα στους <strong>3 ειδικούς αρχαιολόγους</strong> που συμβουλευτήκαμε κατά την ανάπτυξη. Ο κ. <strong>Ευαγγελίδης εξέφρασε ενδιαφέρον για χρήση σε μελλοντικές ανασκαφές</strong>. Έχουμε προγραμματίσει <strong>δοκιμή στο Καλαπόδι/Τιθορέα (Σεπτέμβριος 2026)</strong> με το Γερμανικό Αρχαιολογικό Ινστιτούτο. Ο πηγαίος κώδικας είναι ανοιχτός.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Έχει χρησιμοποιηθεί σε πραγματική ανασκαφή;</div>
+      <div class="qa-a">Όχι ακόμα — η πρώτη επιτόπια δοκιμή είναι τον <strong>Σεπτέμβριο 2026 στο Καλαπόδι</strong> (αρχαία Τιθορέα) με το Γερμανικό Αρχαιολογικό Ινστιτούτο. Μέχρι τώρα έχουμε δοκιμές εργαστηρίου, δοκιμές με παραγόμενες δονήσεις, και 255 automated tests που επαληθεύουν κάθε αλγόριθμο μαθηματικά.</div>
+    </div>
+
+    <div class="stitle">Μέλλον &amp; Βελτιώσεις</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι θα βελτιώνατε αν είχατε άλλους 6 μήνες;</div>
+      <div class="qa-a"><strong>(1) Κλείδωμα MAC address</strong> — αποτροπή BLE παρεμβολής σε χώρους ανταγωνισμού από άλλες συσκευές. <strong>(2) Εκπαίδευση VAE με πραγματικά δεδομένα</strong> από το Καλαπόδι αντί για συνθετικά. <strong>(3) Multi-sensor BLE</strong> — η εφαρμογή έχει ήδη GIS χάρτη που μπορεί να χειριστεί πολλαπλούς αισθητήρες, λείπει η υλοποίηση multi-device BLE. <strong>(4) Solar panel</strong> για ατέρμονη λειτουργία σε πολυήμερες ανασκαφές (τώρα: ~1 ώρα μπαταρία).</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Η εφαρμογή κάνει μόνο ασφάλεια ή και άλλα πράγματα;</div>
+      <div class="qa-a">Πολύ περισσότερα. <strong>Τεκμηρίωση ευρημάτων</strong> με GPS, φωτογραφία, κατηγοριοποίηση. <strong>3D ανακατασκευή</strong> αντικειμένων μέσω Structure from Motion (16 γωνίες λήψης, RANSAC + Bundle Adjustment) — σε ~1–3 λεπτά στο κινητό. <strong>Αναγνώριση νομισμάτων</strong> (4-επίπεδο σύστημα: ανίχνευση → υλικό/φθορά → κλίμακα Sheldon → βάση δεδομένων Numista). <strong>GIS χαρτογράφηση</strong> με GeoJSON/Shapefile. <strong>Εξαγωγή μεταδεδομένων</strong> σε CIDOC-CRM (ISO 21127) και Dublin Core — τα διεθνή πρότυπα των μουσείων.</div>
+    </div>
+
+    <div class="stitle">Δύσκολες Ερωτήσεις</div>
+
+    <div class="qa-block warn">
+      <div class="qa-q">Πώς ξέρετε ότι το AI δεν θα κάνει λάθος σε κρίσιμη στιγμή;</div>
+      <div class="qa-a">Δεν υπάρχει 100% εγγύηση για κανένα σύστημα AI. Γι' αυτό το VAE είναι <strong>Tier 2</strong> — λειτουργεί παράλληλα με τους κανόνες DIN, δεν τους αντικαθιστά. Αν το AI αποτύχει εντελώς, το <strong>rule-based fallback</strong> με 7 μετρικές συνεχίζει. Ένας ψευδής συναγερμός σημαίνει ότι οι αρχαιολόγοι βγαίνουν προσωρινά — ενοχλητικό αλλά ασφαλές. Η αποτυχία να χτυπήσει όταν έπρεπε είναι η επικίνδυνη περίπτωση, οπότε έχουμε <em>σκόπιμα χαμηλό κατώφλι</em>.</div>
+    </div>
+
+    <div class="qa-block warn">
+      <div class="qa-q">Η εφαρμογή είναι 150 MB — είναι πολύ μεγάλη;</div>
+      <div class="qa-a">Είναι μεγάλη λόγω περιεχομένου: ML μοντέλα TFLite, βιβλιοθήκες επεξεργασίας εικόνας, offline tile caching, PDF/metadata export, GIS parsing, δεδομένα αναφοράς νομισμάτων. Στο πεδίο εγκαθίσταται μία φορά με WiFi — μετά λειτουργεί <strong>πλήρως offline</strong>. Για επαγγελματικό εργαλείο 150 MB είναι απολύτως αποδεκτό.</div>
+    </div>
+
+    <div class="qa-block warn">
+      <div class="qa-q">Ένας αισθητήρας 30€ μπορεί να είναι αξιόπιστος;</div>
+      <div class="qa-a">Ο MPU6886 IMU στο M5StickC χρησιμοποιείται σε χιλιάδες βιομηχανικές εφαρμογές. Το κόστος είναι χαμηλό λόγω <strong>scale of manufacturing</strong> — όχι λόγω κακής ποιότητας. Το firmware μας προσθέτει: Madgwick AHRS για διόρθωση κλίσης, Butterworth bandpass για αφαίρεση θορύβου, και θερμοκρασιακή αντιστάθμιση. Η αξιοπιστία δεν εξαρτάται μόνο από το hardware — εξαρτάται από τον αλγόριθμο.</div>
+    </div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 08 · Κριτές Q&amp;A · σελ. 11</span></div>
+</div>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 12: ΑΡΙΘΜΟΙ & ΓΡΗΓΟΡΑ FACTS ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">08 · Γρήγορα Facts &amp; Αριθμοί</div><div class="ph-pg">σελ. 12</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">⚡</div>
+      <div><div class="ch-num">Κεφάλαιο 08 · Μέρος Δ</div><div class="ch-name">Αριθμοί &amp; Facts — Απέξω</div></div>
+    </div>
+
+    <div class="stitle">Αριθμοί που Πρέπει να Ξέρετε Απέξω</div>
+    <div class="num-grid-big">
+      <div class="num-card-big gold"><div class="nv-big">30€</div><div class="nl-big">Κόστος συσκευής<br><span>vs. χιλιάδες για επαγγελματικά</span></div></div>
+      <div class="num-card-big"><div class="nv-big">200 Hz</div><div class="nl-big">Δειγματοληψία IMU<br><span>1 μέτρηση κάθε 5ms</span></div></div>
+      <div class="num-card-big"><div class="nv-big">&lt;500ms</div><div class="nl-big">Από δόνηση σε alert<br><span>firmware + BLE + app</span></div></div>
+      <div class="num-card-big"><div class="nv-big">256</div><div class="nl-big">Σημεία FFT<br><span>0,78 Hz ανάλυση/bin</span></div></div>
+      <div class="num-card-big"><div class="nv-big">3</div><div class="nl-big">Ειδικοί αρχαιολόγοι<br><span>ΔΠΘ · Αθηνά · ΕΚΠΑ</span></div></div>
+      <div class="num-card-big"><div class="nv-big">255</div><div class="nl-big">Automated tests<br><span>100% passing</span></div></div>
+      <div class="num-card-big"><div class="nv-big">5s</div><div class="nl-big">Watchdog reset<br><span>αυτόματη επανεκκίνηση</span></div></div>
+      <div class="num-card-big"><div class="nv-big">30%</div><div class="nl-big">Ελλιπείς εκθέσεις<br><span>Cambridge Univ. Press</span></div></div>
+      <div class="num-card-big"><div class="nv-big">17</div><div class="nl-big">Πεδία JSON/πακέτο<br><span>από αισθητήρα → κινητό</span></div></div>
+      <div class="num-card-big"><div class="nv-big">512</div><div class="nl-big">Bytes BLE MTU<br><span>vs. default 20 bytes</span></div></div>
+      <div class="num-card-big"><div class="nv-big">1974</div><div class="nl-big">Θάνατος Μαρινάτου<br><span>1 Οκτωβρίου</span></div></div>
+      <div class="num-card-big gold"><div class="nv-big">4</div><div class="nl-big">Latent dimensions VAE<br><span>10→8→6→4→6→8→10</span></div></div>
+    </div>
+
+    <div class="stitle">Πότε Αναπτύχθηκε Τι — Χρονολόγιο</div>
+    <table>
+      <thead class="dark"><tr><th>Έκδοση</th><th>Ημερομηνία</th><th>Κύρια Αλλαγή</th><th>Τι Λύθηκε</th></tr></thead>
+      <tbody>
+        <tr><td>v4.x</td><td>Πριν 2026</td><td>Πρώτη αρχιτεκτονική — αισθητήρας κάνει τα πάντα</td><td>—</td></tr>
+        <tr><td>v5.0</td><td>13 Φεβ 2026</td><td>Διαχωρισμός εργασιών · MTU 512 · FFT στο κινητό · Spectrogram</td><td>Κομμένα BLE μηνύματα · Υπερφόρτωση αισθητήρα</td></tr>
+        <tr><td>v5.0+AI</td><td>24 Φεβ 2026</td><td>VAE offline · Watchdog 5s · Arias/CAV · GIS · 30 bug fixes</td><td>Σιωπηλό πάγωμα · Χωρίς AI · Χωρίς χάρτη</td></tr>
+        <tr><td>v4.2 App</td><td>1 Μαρ 2026</td><td>Νέο Alert overlay · Per-layer GIS · Offline tiles · GPS dot</td><td>UI/UX · Offline χαρτογράφηση</td></tr>
+      </tbody>
+    </table>
+
+    <div class="stitle">Πρότυπα &amp; Πηγές — Γρήγορη Αναφορά</div>
+    <table>
+      <thead class="teal"><tr><th>Πρότυπο</th><th>Οργανισμός</th><th>Τι ορίζει</th><th>Τιμή Κατωφλίου</th></tr></thead>
+      <tbody>
+        <tr><td>DIN 4150-3</td><td>Γερμανία</td><td>PPV για κτίρια πολιτιστικής κληρονομιάς</td><td>3 mm/s (1–10Hz)</td></tr>
+        <tr><td>EPRI</td><td>ΗΠΑ (Nuclear)</td><td>CAV για δομική ακεραιότητα</td><td>0,16 g·s</td></tr>
+        <tr><td>Allen (1978)</td><td>Σεισμολογία</td><td>STA/LTA για σεισμική έναρξη</td><td>&gt;4,0</td></tr>
+        <tr><td>ISO 10816</td><td>ISO</td><td>Crest factor για κρουστικά συμβάντα</td><td>&gt;5,0</td></tr>
+        <tr><td>CIDOC-CRM</td><td>ISO 21127</td><td>Μεταδεδομένα πολιτιστικής κληρονομιάς</td><td>Παγκόσμιο πρότυπο μουσείων</td></tr>
+      </tbody>
+    </table>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 08 · Facts &amp; Αριθμοί · σελ. 12</span></div>
+</div>
+
+<style>
+  .qa-block {
+    margin-bottom:7px;
+    border:1px solid rgba(0,229,200,0.15);
+    border-left:3px solid rgba(0,229,200,0.5);
+    background:rgba(0,229,200,0.03);
+    overflow:hidden;
+  }
+  .qa-block.warn {
+    border-color:rgba(255,194,0,0.2);
+    border-left-color:rgba(255,194,0,0.6);
+    background:rgba(255,194,0,0.025);
+  }
+  .qa-q {
+    font-family:'Roboto Mono',monospace;
+    font-size:10.5px; font-weight:700; color:#fff;
+    background:rgba(0,229,200,0.08);
+    padding:6px 14px;
+    border-bottom:1px solid rgba(0,229,200,0.1);
+    display:flex; align-items:center; gap:8px;
+  }
+  .qa-q::before { content:'Q›'; color:var(--teal); font-size:10px; opacity:0.6; flex-shrink:0; }
+  .qa-block.warn .qa-q { background:rgba(255,194,0,0.07); border-bottom-color:rgba(255,194,0,0.12); }
+  .qa-block.warn .qa-q::before { color:var(--gold); }
+  .qa-a {
+    font-size:12px; line-height:1.7; color:rgba(212,237,233,0.72);
+    padding:7px 14px 8px 14px;
+  }
+  .qa-a strong { color:var(--teal); font-weight:700; }
+  .qa-block.warn .qa-a strong { color:var(--gold); }
+  .qa-a em { color:rgba(212,237,233,0.45); font-style:italic; }
+
+  /* big number grid */
+  .num-grid-big {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0 14px;
+  }
+  .num-card-big {
+    background:#020504;
+    border:1px solid rgba(0,229,200,0.15);
+    border-top:2px solid rgba(0,229,200,0.4);
+    padding:10px 10px 8px; text-align:center;
+  }
+  .num-card-big.gold { border-top-color:rgba(255,194,0,0.6); }
+  .num-card-big.gold .nv-big { color:var(--gold); }
+  .nv-big {
+    font-family:'Roboto Mono',monospace; font-size:20px; font-weight:700;
+    color:var(--teal); line-height:1; margin-bottom:4px;
+  }
+  .nl-big { font-size:10px; color:rgba(212,237,233,0.65); line-height:1.35; }
+  .nl-big span { font-size:8.5px; color:var(--muted); display:block; margin-top:1px; }
+</style>
+
+
+<!-- ══════════════════════════ ΣΕΛΙΔΑ 13: GLOSSARY ══════════════════════════ -->
+<div class="page">
+  <div class="ph"><div class="ph-proj">AncientVision</div><div class="ph-tag">09 · Γλωσσάριο Τεχνικών Όρων</div><div class="ph-pg">σελ. 13</div></div>
+  <div class="pc">
+
+    <div class="ch-head">
+      <div class="ch-icon">📖</div>
+      <div><div class="ch-num">Κεφάλαιο 09</div><div class="ch-name">Γλωσσάριο — Τεχνικοί Όροι</div></div>
+    </div>
+
+    <div class="gl-cols">
+
+      <!-- LEFT COLUMN -->
+      <div class="gl-col">
+
+        <div class="gl-cat">Υλικό &amp; Επικοινωνία</div>
+
+        <div class="gl-entry">
+          <div class="gl-term">IMU</div>
+          <div class="gl-full">Inertial Measurement Unit</div>
+          <div class="gl-def">Αισθητήρας που μετράει επιτάχυνση και γωνιακή ταχύτητα σε 3 άξονες. Στο AncientVision χρησιμοποιούμε τον <strong>MPU6886</strong> — μετράει πόσο γρήγορα και σε ποια κατεύθυνση κινείται το έδαφος.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">ESP32</div>
+          <div class="gl-full">Espressif Systems SoC</div>
+          <div class="gl-def">Ο μικροελεγκτής μέσα στο M5StickC Plus 2. Dual-core 240 MHz επεξεργαστής με ενσωματωμένο Bluetooth και WiFi. Τρέχει το firmware μας.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">BLE</div>
+          <div class="gl-full">Bluetooth Low Energy</div>
+          <div class="gl-def">Έκδοση Bluetooth χαμηλής κατανάλωσης ενέργειας. Εμβέλεια ~10m. Ιδανικό για IoT συσκευές με μικρή μπαταρία. Χρησιμοποιούμε BLE 4.2.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">MTU</div>
+          <div class="gl-full">Maximum Transmission Unit</div>
+          <div class="gl-def">Το μέγιστο μέγεθος πακέτου που μπορεί να σταλεί σε μία μεταφορά BLE. Default: 20 bytes. Εμείς διαπραγματευόμαστε <strong>512 bytes</strong> για να στείλουμε πλήρη JSON πακέτα.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">JSON</div>
+          <div class="gl-full">JavaScript Object Notation</div>
+          <div class="gl-def">Μορφή κειμένου για ανταλλαγή δεδομένων. Ο αισθητήρας στέλνει τα 17 πεδία του (PPV, freq, κλπ.) ως JSON string μέσω BLE στο κινητό.</div>
+        </div>
+
+        <div class="gl-cat" style="margin-top:12px;">Επεξεργασία Σήματος</div>
+
+        <div class="gl-entry">
+          <div class="gl-term">FFT</div>
+          <div class="gl-full">Fast Fourier Transform</div>
+          <div class="gl-def">Αλγόριθμος που μετατρέπει ένα σήμα από <em>πεδίο χρόνου</em> σε <em>πεδίο συχνοτήτων</em>. Σαν το equalizer της μουσικής — δείχνει ποιες συχνότητες υπάρχουν στο σήμα. 256 σημεία = ανάλυση 0,78 Hz/bin.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">DWT</div>
+          <div class="gl-full">Discrete Wavelet Transform</div>
+          <div class="gl-def">Παρόμοιο με το FFT αλλά αναλύει <em>και χρόνο και συχνότητα</em> ταυτόχρονα. Χρησιμοποιούμε Haar DWT 3 επιπέδων για ανίχνευση παροδικών συμβάντων (κρούσεις, ρωγμές).</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">DLPF</div>
+          <div class="gl-full">Digital Low-Pass Filter</div>
+          <div class="gl-def">Φίλτρο που αφήνει να περάσουν μόνο χαμηλές συχνότητες. Το DLPF στον MPU6886 ορίζεται στα 99 Hz για αποτροπή aliasing πριν τη δειγματοληψία.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Butterworth</div>
+          <div class="gl-full">Butterworth Bandpass Filter</div>
+          <div class="gl-def">Φίλτρο 4ης τάξης που κρατάει μόνο συχνότητες <strong>0,5–100 Hz</strong>. Αφαιρεί βαρύτητα (&lt;0,5 Hz) και ηλεκτρονικό θόρυβο (&gt;100 Hz).</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Madgwick</div>
+          <div class="gl-full">Madgwick AHRS Filter</div>
+          <div class="gl-def">Αλγόριθμος που συνδυάζει επιταχυνσιόμετρο + γυροσκόπιο για να υπολογίσει τον <em>πραγματικό προσανατολισμό</em> της συσκευής. Αν ο πάσσαλος μπει λοξά, τα δεδομένα διορθώνονται αυτόματα.</div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="gl-col">
+
+        <div class="gl-cat">Μετρικές Ασφάλειας</div>
+
+        <div class="gl-entry">
+          <div class="gl-term">PPV</div>
+          <div class="gl-full">Peak Particle Velocity</div>
+          <div class="gl-def">Μέγιστη ταχύτητα (mm/s) με την οποία κινείται ένα σωματίδιο εδάφους κατά τη δόνηση. Είναι η <strong>κύρια μετρική ασφάλειας</strong> στο DIN 4150-3. Όσο μεγαλύτερο, τόσο πιο επικίνδυνο.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">RMS</div>
+          <div class="gl-full">Root Mean Square</div>
+          <div class="gl-def">Η "μέση ενέργεια" ενός σήματος. Υπολογίζεται ως η τετραγωνική ρίζα του μέσου των τετραγώνων. Δείχνει το <em>συνολικό επίπεδο δόνησης</em>, όχι μόνο την κορυφή.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">STA/LTA</div>
+          <div class="gl-full">Short-Term Avg / Long-Term Avg</div>
+          <div class="gl-def">Αναλογία βραχυπρόθεσμου / μακροπρόθεσμου μέσου ενέργειας. Αν &gt;4,0 (Allen 1978), ανιχνεύεται <strong>ξαφνική σεισμική έναρξη</strong>. Χρησιμοποιείται από σεισμολογικά δίκτυα παγκοσμίως.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Kurtosis</div>
+          <div class="gl-full">Στατιστική Κύρτωση</div>
+          <div class="gl-def">Μετράει πόσο "αιχμηρό" είναι ένα σήμα. Κανονική τυχαία δόνηση ≈ 3. Kurtosis &gt;3 σημαίνει <strong>κρουστικό συμβάν</strong> — απότομη κορυφή που προδίδει ρωγμή ή κρούση.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Crest Factor</div>
+          <div class="gl-full">Συντελεστής Κορυφής</div>
+          <div class="gl-def">Κορυφή / RMS. Crest &gt;5 σημαίνει ότι το σήμα έχει <strong>μία πολύ απότομη κορυφή</strong> σε σχέση με τη μέση ενέργεια — χαρακτηριστικό κρουστικών και σεισμικών γεγονότων.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Arias Intensity</div>
+          <div class="gl-full">Ένταση Arias</div>
+          <div class="gl-def"><strong>Σωρευτική σεισμική ενέργεια</strong> σε m/s. Υπολογίζεται ως ολοκλήρωμα του τετραγώνου της επιτάχυνσης × π/2g. Χρήσιμο για να ξεχωρίσει ένα παρατεταμένο επικίνδυνο συμβάν από μια στιγμιαία κορυφή.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">CAV</div>
+          <div class="gl-full">Cumulative Absolute Velocity</div>
+          <div class="gl-def">Αθροιστική απόλυτη ταχύτητα σε g·s. Κατώφλι EPRI: &gt;0,16 g·s = κίνδυνος δομικής ζημιάς. Χρησιμοποιείται για παρακολούθηση <strong>συνεχούς φόρτου</strong>, όχι μόνο κορυφών.</div>
+        </div>
+
+        <div class="gl-cat" style="margin-top:12px;">AI / Software</div>
+
+        <div class="gl-entry">
+          <div class="gl-term">VAE</div>
+          <div class="gl-full">Variational Autoencoder</div>
+          <div class="gl-def">Τύπος νευρωνικού δικτύου που μαθαίνει να <em>ανακατασκευάζει</em> κανονικά δεδομένα. Αν αποτύχει στην ανακατασκευή → ανωμαλία. Εκπαιδεύεται μόνο με κανονικές δονήσεις — δεν χρειάζεται παραδείγματα καταστροφών.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">TFLite</div>
+          <div class="gl-full">TensorFlow Lite</div>
+          <div class="gl-def">Ελαφριά έκδοση του TensorFlow για κινητά. Τρέχει ML μοντέλα <strong>απευθείας στο Android</strong> χωρίς internet ή server. Το VAE μοντέλο μας είναι .tflite αρχείο &lt;1 MB.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">IndexedStack</div>
+          <div class="gl-full">Flutter Widget</div>
+          <div class="gl-def">Flutter widget που κρατάει <strong>όλες τις καρτέλες ζωντανές</strong> ταυτόχρονα (αλλάζει μόνο η ορατότητα). Χωρίς αυτό, η αλλαγή καρτέλας θα έκανε disconnect το BLE.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">GeoJSON</div>
+          <div class="gl-full">Geographic JSON</div>
+          <div class="gl-def">Πρότυπο μορφή αρχείου για γεωγραφικά δεδομένα (πολύγωνα, γραμμές, σημεία) σε JSON. Χρησιμοποιείται από QGIS, Google Maps και την εφαρμογή μας για χαρτογράφηση τάφρων.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">Shapefile</div>
+          <div class="gl-full">ESRI Shapefile (.shp)</div>
+          <div class="gl-def">Το βιομηχανικό πρότυπο μορφή GIS (QGIS, ArcGIS). Αποτελείται από .shp (γεωμετρία) + .dbf (χαρακτηριστικά). Το AncientVision έχει <strong>καθαρό Dart parser</strong> χωρίς εξωτερικές βιβλιοθήκες.</div>
+        </div>
+
+        <div class="gl-entry">
+          <div class="gl-term">CIDOC-CRM</div>
+          <div class="gl-full">ISO 21127:2014</div>
+          <div class="gl-def">Διεθνές πρότυπο μεταδεδομένων για πολιτιστική κληρονομιά. Χρησιμοποιείται από μουσεία παγκοσμίως. Η εφαρμογή εξάγει ευρήματα σε αυτή τη μορφή ώστε να είναι συμβατά με αρχαιολογικές βάσεις δεδομένων.</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+  <div class="pf"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Κεφ. 09 · Γλωσσάριο · σελ. 13</span></div>
+</div>
+
+<style>
+  .gl-cols { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .gl-col { display:flex; flex-direction:column; gap:0; }
+
+  .gl-cat {
+    font-family:'Roboto Mono',monospace;
+    font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--bg); background:var(--teal);
+    padding:3px 10px 3px 8px; margin-bottom:6px;
+    clip-path:polygon(0 0,calc(100% - 8px) 0,100% 50%,calc(100% - 8px) 100%,0 100%);
+    padding-right:18px; display:inline-block;
+  }
+
+  .gl-entry {
+    border-left:2px solid rgba(0,229,200,0.2);
+    padding:5px 0 5px 10px;
+    margin-bottom:5px;
+  }
+  .gl-entry:hover { border-left-color:rgba(0,229,200,0.5); }
+
+  .gl-term {
+    font-family:'Roboto Mono',monospace;
+    font-size:12px; font-weight:700; color:var(--teal);
+    line-height:1; display:inline;
+  }
+  .gl-full {
+    font-size:9.5px; color:var(--muted); display:inline;
+    margin-left:6px; font-style:italic;
+  }
+  .gl-def {
+    font-size:11.5px; line-height:1.6; color:rgba(212,237,233,0.65);
+    margin-top:3px;
+  }
+  .gl-def strong { color:var(--teal); font-weight:700; }
+  .gl-def em { color:rgba(212,237,233,0.45); }
+</style>
+
+
+<!-- PAGE 14 -->
+<div class="page" style="padding:38px 52px;">
+  <div class="ph" style="margin-bottom:22px;"><span class="ph-tag">ΕΣΩΤΕΡΙΚΗ ΑΝΑΛΥΣΗ</span><span class="ph-num">14</span></div>
+  <div class="stitle" style="margin-bottom:14px;">Πώς Δουλεύει το Signal Pipeline</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.6;">Από τον αισθητήρα μέχρι την ειδοποίηση — κάθε βήμα εξηγημένο απλά. Φαντάσου ότι το σύστημα είναι ένας ειδικός μουσικός που <strong style="color:var(--teal)">ακούει τις δονήσεις του εδάφους</strong> και αποφασίζει αν είναι επικίνδυνες.</p>
+  <style>
+    .pipe-step{display:flex;align-items:flex-start;gap:14px;margin-bottom:9px;}
+    .pipe-num{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;color:var(--bg);background:var(--teal);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .pipe-body{flex:1;}
+    .pipe-title{font-family:"Roboto Mono",monospace;font-size:12.5px;font-weight:700;color:var(--teal);margin-bottom:1px;}
+    .pipe-sub{font-size:9.5px;color:var(--gold);font-family:"Roboto Mono",monospace;margin-bottom:2px;}
+    .pipe-desc{font-size:11px;color:rgba(212,237,233,0.75);line-height:1.55;}
+    .pipe-analogy{font-size:10px;color:rgba(255,194,0,0.65);font-style:italic;border-left:2px solid rgba(255,194,0,0.25);padding-left:7px;margin-top:2px;}
+    .pipe-arrow{text-align:center;color:rgba(0,229,200,0.25);font-size:12px;margin:1px 0 1px 20px;}
+  </style>
+  <div class="pipe-step"><div class="pipe-num">1</div><div class="pipe-body"><div class="pipe-title">Μέτρηση — IMU MPU6886</div><div class="pipe-sub">200 μετρήσεις/δευτερόλεπτο · ±8g εύρος</div><div class="pipe-desc">Μετράει επιτάχυνση σε 3 κατευθύνσεις (X/Y/Z) 200 φορές κάθε δευτερόλεπτο. Κάθε τιμή αντιπροσωπεύει το "πόσο κουνήθηκε" το έδαφος εκείνη τη στιγμή.</div><div class="pipe-analogy">Αναλογία: Thermometer που μετράει θερμοκρασία κάθε 5ms.</div></div></div>
+  <div class="pipe-arrow">▼</div>
+  <div class="pipe-step"><div class="pipe-num">2</div><div class="pipe-body"><div class="pipe-title">DLPF + Madgwick Filter</div><div class="pipe-sub">Αφαιρεί θόρυβο · ευθυγράμμιση στο βαρυτικό πεδίο</div><div class="pipe-desc">Το DLPF κόβει συχνότητες >99Hz (μόνο θόρυβος). Το Madgwick υπολογίζει τον ακριβή προσανατολισμό ώστε η βαρύτητα να αφαιρεθεί — μετράμε μόνο πραγματικές δονήσεις.</div><div class="pipe-analogy">Αναλογία: Noise-canceling ακουστικά που αφαιρούν τον θόρυβο περιβάλλοντος.</div></div></div>
+  <div class="pipe-arrow">▼</div>
+  <div class="pipe-step"><div class="pipe-num">3</div><div class="pipe-body"><div class="pipe-title">Butterworth Bandpass Filter</div><div class="pipe-sub">0.5 – 100 Hz · 4ης τάξης</div><div class="pipe-desc">Κρατάει μόνο τις συχνότητες που ορίζει το DIN 4150-3. Κάτω από 0.5Hz = αργές κινήσεις συσκευής. Πάνω από 100Hz = ηλεκτρονικός θόρυβος.</div><div class="pipe-analogy">Αναλογία: Equalizer που κόβει τα πολύ μπάσα και τα πολύ ψηλά.</div></div></div>
+  <div class="pipe-arrow">▼</div>
+  <div class="pipe-step"><div class="pipe-num">4</div><div class="pipe-body"><div class="pipe-title">FFT — Fast Fourier Transform</div><div class="pipe-sub">256 σημεία · Hann window · ανάλυση συχνοτήτων</div><div class="pipe-desc">Παίρνει 256 μετρήσεις (~1.28 sec) και τις αποσυνθέτει σε συχνότητες. Αντί "πόσο κουνήθηκε" απαντάει "σε ποιες συχνότητες". Σεισμός: 1-10Hz. Μηχάνημα: 25-80Hz. Κρούση: πολλές ταυτόχρονα.</div><div class="pipe-analogy">Αναλογία: Πρίσμα που χωρίζει λευκό φως σε χρώματα — η FFT χωρίζει δόνηση σε "χρώματα" συχνότητας.</div></div></div>
+  <div class="pipe-arrow">▼</div>
+  <div class="pipe-step"><div class="pipe-num">5</div><div class="pipe-body"><div class="pipe-title">Υπολογισμός 7 Μετρικών</div><div class="pipe-sub">PPV · RMS · STA/LTA · Kurtosis · Crest · Arias · CAV</div><div class="pipe-desc">Κάθε μετρική βλέπει διαφορετική πτυχή: PPV = κορυφαία ταχύτητα, STA/LTA = ξαφνικές αλλαγές, Kurtosis = αιχμές, Arias = συνολική ενέργεια σεισμού.</div><div class="pipe-analogy">Αναλογία: Γιατρός που μετράει παλμό + πίεση + θερμοκρασία — πολλές μετρήσεις = πλήρης εικόνα.</div></div></div>
+  <div class="pipe-arrow">▼</div>
+  <div class="pipe-step"><div class="pipe-num">6</div><div class="pipe-body"><div class="pipe-title">BLE → App → Απόφαση (Tier 1 + Tier 2)</div><div class="pipe-sub">JSON 17 πεδίων · κάθε δευτερόλεπτο · Rule-based + VAE AI</div><div class="pipe-desc">Το JSON στέλνεται στο κινητό. Tier 1 ελέγχει κανόνες DIN 4150-3. Tier 2 VAE αναλύει ανορθόδοξες δονήσεις. Αλέρτ → full-screen ειδοποίηση με τύπο κινδύνου και οδηγίες.</div></div></div>
+  <div class="pf" style="margin-top:auto;"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Σελ. 14</span></div>
+</div>
+
+<!-- PAGE 15 -->
+<div class="page" style="padding:38px 52px;">
+  <div class="ph" style="margin-bottom:22px;"><span class="ph-tag">ΕΣΩΤΕΡΙΚΗ ΑΝΑΛΥΣΗ</span><span class="ph-num">15</span></div>
+  <div class="stitle" style="margin-bottom:14px;">Πώς Δουλεύει το AI — VAE</div>
+  <style>
+    .vae-box{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin-bottom:10px;}
+    .vae-box-title{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:700;color:var(--gold);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}
+    .vae-box p{font-size:12px;color:rgba(212,237,233,0.75);line-height:1.65;}
+    .vae-arch{display:flex;align-items:center;justify-content:center;gap:0;margin:10px 0 3px;}
+    .vae-layer{background:var(--bg3);border:1px solid rgba(0,229,200,0.25);padding:7px 0;text-align:center;width:68px;font-family:"Roboto Mono",monospace;font-size:11px;color:var(--teal);font-weight:700;}
+    .vae-layer.lat{background:rgba(0,229,200,0.1);border-color:var(--teal);width:76px;}
+    .vae-arrow-h{color:rgba(0,229,200,0.4);font-size:15px;padding:0 1px;}
+    .vae-lbl{font-size:8.5px;color:var(--muted);text-align:center;margin-top:2px;}
+    .vae-cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    .vae-cmp{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 12px;}
+    .vae-cmp-title{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:700;margin-bottom:4px;}
+    .vae-cmp p{font-size:11px;color:rgba(212,237,233,0.7);line-height:1.55;}
+    .norm-c{color:#44dd88;}.anom-c{color:var(--red);}
+  </style>
+  <div class="vae-box"><div class="vae-box-title">Η Κεντρική Ιδέα</div><p>Το VAE <strong style="color:var(--teal)">δεν ξέρει τι είναι "επικίνδυνο"</strong> — ξέρει μόνο τι είναι "κανονικό". Εκπαιδεύτηκε σε δεδομένα κανονικής λειτουργίας. Όταν βλέπει κάτι που δεν μοιάζει, χτυπάει συναγερμό. Μπορεί να εντοπίσει <em style="color:rgba(255,194,0,0.8)">οποιοδήποτε</em> ανώμαλο συμβάν — ακόμα και τύπους που δεν έχει ξαναδεί.</p></div>
+  <div style="text-align:center;margin:2px 0;"><span style="font-family:'Roboto Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;">Αρχιτεκτονική VAE — 10→8→6→latent(4)→6→8→10</span></div>
+  <div class="vae-arch">
+    <div><div class="vae-layer">10</div><div class="vae-lbl">Είσοδος</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer">8</div><div class="vae-lbl">Encoder 1</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer">6</div><div class="vae-lbl">Encoder 2</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer lat">4<br><span style="font-size:7.5px;opacity:0.7">latent</span></div><div class="vae-lbl" style="color:var(--teal)">Συμπίεση</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer">6</div><div class="vae-lbl">Decoder 1</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer">8</div><div class="vae-lbl">Decoder 2</div></div><span class="vae-arrow-h">→</span>
+    <div><div class="vae-layer">10</div><div class="vae-lbl">Έξοδος</div></div>
+  </div>
+  <p style="text-align:center;font-size:10px;color:var(--muted);margin-bottom:10px;">10 χαρακτηριστικά: rms · ppv · freq · crest · centroid · kurtosis · stalta · arias · cav · temp</p>
+  <div class="vae-cmp-grid">
+    <div class="vae-cmp"><div class="vae-cmp-title norm-c">✓ Κανονική Δόνηση</div><p>Γνώριμα δεδομένα. Ανακατασκευή ≈ είσοδος. <strong style="color:#44dd88">Reconstruction error ≈ 0.</strong> Καμία ειδοποίηση.</p></div>
+    <div class="vae-cmp"><div class="vae-cmp-title anom-c">⚠ Ανώμαλη Δόνηση</div><p>Άγνωστα δεδομένα. Ανακατασκευή διαφέρει πολύ. <strong style="color:var(--red)">Error > threshold.</strong> Ειδοποίηση.</p></div>
+  </div>
+  <div style="background:rgba(0,229,200,0.05);border:1px solid rgba(0,229,200,0.15);border-radius:4px;padding:10px 14px;margin-top:10px;">
+    <div style="font-family:'Roboto Mono',monospace;font-size:10.5px;font-weight:700;color:var(--teal);margin-bottom:5px;">ΓΙΑΤΙ VAE ΚΑΙ ΟΧΙ CLASSIFIER;</div>
+    <p style="font-size:11.5px;color:rgba(212,237,233,0.75);line-height:1.6;">Classifier = μόνο για κατηγορίες εκπαίδευσης. Σε αρχαιολογικά περιβάλλοντα δεν έχουμε labeled dataset κινδύνων. VAE εκπαιδεύεται μόνο σε "κανονικό" — εντοπίζει <em style="color:var(--gold)">οτιδήποτε</em> αποκλίνει χωρίς προηγούμενο παράδειγμα.</p>
+  </div>
+  <div style="margin-top:10px;background:var(--bg2);border:1px solid rgba(255,194,0,0.2);border-radius:4px;padding:10px 14px;">
+    <div style="font-family:'Roboto Mono',monospace;font-size:10.5px;font-weight:700;color:var(--gold);margin-bottom:5px;">ADAPTIVE CALIBRATION — Welford Algorithm</div>
+    <p style="font-size:11.5px;color:rgba(212,237,233,0.7);line-height:1.6;">Σε εργοτάξιο με πολύ θόρυβο το threshold ανεβαίνει αυτόματα (λιγότεροι ψευδείς συναγερμοί). Σε ήσυχη τοποθεσία κατεβαίνει (μέγιστη ευαισθησία). Welford = online υπολογισμός μέσου + τυπικής απόκλισης χωρίς αποθήκευση ολόκληρου ιστορικού.</p>
+  </div>
+  <div class="pf" style="margin-top:auto;"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Σελ. 15</span></div>
+</div>
+
+<!-- PAGE 16 -->
+<div class="page" style="padding:38px 52px;">
+  <div class="ph" style="margin-bottom:22px;"><span class="ph-tag">ΕΣΩΤΕΡΙΚΗ ΑΝΑΛΥΣΗ</span><span class="ph-num">16</span></div>
+  <div class="stitle" style="margin-bottom:8px;">Γιατί Αυτές οι Επιλογές;</div>
+  <p style="font-size:11.5px;color:var(--muted);margin-bottom:16px;">Κάθε τεχνολογική απόφαση είχε λόγο. Εδώ εξηγείται το "γιατί" πίσω από κάθε επιλογή.</p>
+  <style>
+    .dec-table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+    .dec-table th{font-family:"Roboto Mono",monospace;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--bg);background:var(--teal);padding:6px 9px;text-align:left;}
+    .dec-table th:first-child{background:rgba(0,229,200,0.15);color:var(--teal);}
+    .dec-table td{font-size:10.5px;color:rgba(212,237,233,0.75);padding:6px 9px;border-bottom:1px solid rgba(0,229,200,0.1);vertical-align:top;line-height:1.5;}
+    .dec-table tr:nth-child(even) td{background:rgba(0,229,200,0.02);}
+    .dec-table td:first-child{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:700;color:var(--teal);white-space:nowrap;}
+    .dec-chosen{color:#44dd88;font-weight:700;}
+    .dec-rejected{color:rgba(212,237,233,0.3);text-decoration:line-through;}
+  </style>
+  <table class="dec-table">
+    <tr><th>Επιλογή</th><th>Διαλέξαμε</th><th>Απορρίφθηκε</th><th>Κύριος Λόγος</th></tr>
+    <tr><td>Ασύρματο</td><td class="dec-chosen">BLE</td><td class="dec-rejected">WiFi / LoRa</td><td>WiFi χρειάζεται router — δεν υπάρχει σε ανασκαφή. BLE: &lt;10mA, direct phone-to-device.</td></tr>
+    <tr><td>Υπολογιστής</td><td class="dec-chosen">M5StickC Plus 2</td><td class="dec-rejected">Arduino / RPi</td><td>ESP32: BLE + WiFi + μπαταρία + IMU + οθόνη — όλα σε €30. RPi ακριβό &amp; μεγάλο.</td></tr>
+    <tr><td>FFT μέγεθος</td><td class="dec-chosen">256 σημεία</td><td class="dec-rejected">128 / 512</td><td>128 = χαμηλή ανάλυση. 512 = 3KB RAM. 256 = ισορροπία ακρίβειας/μνήμης.</td></tr>
+    <tr><td>AI Μοντέλο</td><td class="dec-chosen">VAE (anomaly)</td><td class="dec-rejected">CNN / Classifier</td><td>Δεν έχουμε labeled dataset κινδύνων. VAE = εκπαίδευση μόνο σε "κανονικό".</td></tr>
+    <tr><td>App Platform</td><td class="dec-chosen">Flutter</td><td class="dec-rejected">Native Android</td><td>Ένα codebase → Android &amp; iOS. Εξαιρετικό BLE API. APK σε λεπτά.</td></tr>
+    <tr><td>Ανάλυση</td><td class="dec-chosen">FFT + DWT</td><td class="dec-rejected">Μόνο FFT</td><td>FFT: τι συχνότητες. DWT: πότε ακριβώς — χρόνος + συχνότητα.</td></tr>
+    <tr><td>Πρότυπο</td><td class="dec-chosen">DIN 4150-3</td><td class="dec-rejected">ISO 10816</td><td>DIN 4150-3: ειδικά για κτήρια &amp; μνημεία. ISO 10816: βιομηχανικά μηχανήματα.</td></tr>
+    <tr><td>Navigation</td><td class="dec-chosen">IndexedStack</td><td class="dec-rejected">Navigator</td><td>Navigator καταστρέφει καρτέλες → BLE αποσυνδέεται. IndexedStack τις κρατάει ζωντανές.</td></tr>
+  </table>
+  <div style="background:rgba(0,229,200,0.05);border:1px solid rgba(0,229,200,0.2);border-radius:4px;padding:11px 14px;">
+    <div style="font-family:'Roboto Mono',monospace;font-size:10px;font-weight:700;color:var(--teal);margin-bottom:5px;">ΤΟ BLE MTU PROBLEM — Η ΚΡΙΣΙΜΗ ΛΕΠΤΟΜΕΡΕΙΑ</div>
+    <p style="font-size:11.5px;color:rgba(212,237,233,0.7);line-height:1.6;">BLE από προεπιλογή: μόνο <strong style="color:var(--red)">20 bytes/packet</strong>. Το JSON μας: ~300 bytes. Χωρίς MTU negotiation το JSON κοβόταν και το app έκρασάρε σιωπηλά. Λύση: <code style="color:var(--teal);font-size:10.5px;">device.requestMtu(512)</code> αμέσως μετά τη σύνδεση.</p>
+  </div>
+  <div class="pf" style="margin-top:auto;"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Σελ. 16</span></div>
+</div>
+
+<!-- PAGE 17 -->
+<div class="page" style="padding:38px 52px;">
+  <div class="ph" style="margin-bottom:22px;"><span class="ph-tag">ΠΑΡΟΥΣΙΑΣΗ</span><span class="ph-num">17</span></div>
+  <div class="stitle" style="margin-bottom:8px;">Judge Cheat Sheet</div>
+  <p style="font-size:11.5px;color:var(--muted);margin-bottom:16px;">Πώς να εξηγήσεις κάθε τεχνική έννοια σε judge — απλή γλώσσα, χωρίς jargon.</p>
+  <style>
+    .cs-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .cs-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:9px 11px;}
+    .cs-q{font-family:"Roboto Mono",monospace;font-size:9px;font-weight:700;color:var(--gold);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;}
+    .cs-q::before{content:"? ";}
+    .cs-a{font-size:11px;color:rgba(212,237,233,0.8);line-height:1.55;}
+    .cs-a strong{color:var(--teal);}.cs-a em{color:rgba(255,194,0,0.75);}
+  </style>
+  <div class="cs-grid">
+    <div class="cs-card"><div class="cs-q">Τι μετράει ο αισθητήρας;</div><div class="cs-a">Μετράει <strong>πόσο γρήγορα κινείται το έδαφος</strong> (PPV). Σαν ταχύτητα, όχι απόσταση — αυτό ορίζει το DIN 4150-3 ως κύριο μέγεθος ασφαλείας.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι κάνει η FFT;</div><div class="cs-a">Φαντάσου δόνηση σαν <em>μουσική</em>. FFT = πρίσμα που τη χωρίζει σε νότες. Σεισμός = χαμηλές, μηχάνημα = μεσαίες, κρούση = πολλές ταυτόχρονα.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι κάνει το AI;</div><div class="cs-a">Έχει μάθει την <strong>κανονική δόνηση</strong>. Όταν βλέπει κάτι διαφορετικό, χτυπάει συναγερμό. Δεν χρειάζεται να ξέρει τι είναι "επικίνδυνο".</div></div>
+    <div class="cs-card"><div class="cs-q">Γιατί BLE και όχι WiFi;</div><div class="cs-a">Σε ανασκαφές <em>δεν υπάρχει internet</em>. BLE: direct phone-to-device, 50× λιγότερη ενέργεια, μπαταρία βαστάει μέρες.</div></div>
+    <div class="cs-card"><div class="cs-q">Γιατί DIN 4150-3;</div><div class="cs-a"><strong>Ευρωπαϊκό πρότυπο</strong> ειδικά για κτήρια και μνημεία. Όριο: &lt;3mm/s PPV για ιστορικά κτήρια.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι είναι STA/LTA;</div><div class="cs-a">Αλγόριθμος <em>σεισμολογίας</em>. Αν στιγμιαία ένταση ανέβει &gt;4× πάνω από τη μέση — σεισμός. Ίδιος με επαγγελματικά seismographs.</div></div>
+    <div class="cs-card"><div class="cs-q">Πόσο ακριβό είναι;</div><div class="cs-a">Συσκευή: <strong>~€30</strong>. Επαγγελματικά seismographs: €2.000–€50.000. Για προληπτικό monitoring είναι <em>πλήρως επαρκές</em>.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι γίνεται αν λανθάσει το AI;</div><div class="cs-a"><strong>Δύο παράλληλα συστήματα</strong>: Tier 1 κανόνες DIN (πάντα τρέχουν) + Tier 2 AI. Λάθος AI δεν επηρεάζει τους κανόνες.</div></div>
+    <div class="cs-card"><div class="cs-q">Ποιοι θα το χρησιμοποιήσουν;</div><div class="cs-a"><strong>Αρχαιολόγοι</strong> κοντά σε μηχανήματα, <strong>εργαζόμενοι ασφαλείας</strong>, <strong>μουσεία</strong> κοντά σε κατασκευές.</div></div>
+    <div class="cs-card"><div class="cs-q">Πότε field test;</div><div class="cs-a">Σεπτέμβριο 2026, <strong>Τιθορέα (Καλαπόδι)</strong> με το Γερμανικό Αρχαιολογικό Ινστιτούτο.</div></div>
+    <div class="cs-card"><div class="cs-q">Γιατί Flutter;</div><div class="cs-a">Ένας κώδικας → Android <em>και</em> iOS. APK σε οποιοδήποτε κινητό χωρίς App Store.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι είναι το GIS;</div><div class="cs-a"><strong>Offline χάρτης</strong> με GPS, σχεδίαση ορίων ανασκαφής, GeoJSON/Shapefile. Λειτουργεί χωρίς internet.</div></div>
+  </div>
+  <div style="background:rgba(255,194,0,0.05);border:1px solid rgba(255,194,0,0.18);border-radius:4px;padding:9px 13px;margin-top:10px;">
+    <p style="font-size:11px;color:rgba(255,194,0,0.85);line-height:1.55;">⚠ <strong>Μην αποστηθίσεις αυτές τις απαντήσεις αυτολεξεί.</strong> Κατανόησέ τες. Judge που ακούει "robotic" απάντηση ρωτάει follow-up. Αν καταλαβαίνεις, απαντάς σε οποιαδήποτε παραλλαγή.</p>
+  </div>
+  <div class="pf" style="margin-top:auto;"><span>AncientVision · Πλήρης Τεχνική Τεκμηρίωση · RoboticAlienz</span><span>Σελ. 17</span></div>
+</div>
+
+</body>
+</html>
