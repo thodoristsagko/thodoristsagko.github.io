@@ -26,6 +26,7 @@
     background:#030604;
     width:794px; margin:0 auto;
   }
+  @media screen { .page { box-shadow: 0 4px 32px rgba(0,0,0,0.5); margin-bottom: 12px; } }
 
   /* ═══ PAGE ═══ */
   .page {
@@ -49,7 +50,8 @@
   }
   .page:first-child { page-break-before:auto; break-before:auto; }
   .page:last-child  { page-break-after:auto;  break-after:auto;  }
-  @media print { body { background:none; } .page { page-break-before:always; page-break-after:always; } }
+  @page { size: A4; margin: 0; }
+  @media print { body { background:none; width:210mm; } .page { width:210mm; height:297mm; page-break-before:always; page-break-after:always; } }
 
   /* ═══ COVER ═══ */
   .cover {
