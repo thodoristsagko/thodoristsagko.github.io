@@ -849,6 +849,33 @@
       <div><div class="ch-num">Κεφάλαιο 08</div><div class="ch-name">Ερωτήσεις Κριτών — Πλήρης Οδηγός</div></div>
     </div>
 
+    <div class="stitle">Γενικές Ερωτήσεις — Βασική Κατανόηση</div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι είναι το AncientVision με μια πρόταση;</div>
+      <div class="qa-a">Ένα <strong>σύστημα ασφάλειας σε πραγματικό χρόνο</strong> για αρχαιολογικές ανασκαφές: ένας φθηνός αισθητήρας 30€ ανιχνεύει επικίνδυνες δονήσεις εδάφους και στέλνει άμεσα ειδοποίηση στο κινητό του αρχαιολόγου — πριν καταρρεύσει η τάφρος.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Τι είναι αρχαιολογική τάφρος και γιατί είναι επικίνδυνη;</div>
+      <div class="qa-a">Τάφρος είναι το <strong>άνοιγμα που σκάβουν στο έδαφος</strong> για να βρουν αρχαία αντικείμενα. Μπορεί να είναι βάθους 1–5 μέτρων. Το πρόβλημα: το χώμα δεν είναι σταθερό — δονήσεις από μηχανήματα, βροχή ή σεισμός μπορούν να κάνουν τα τοιχώματα να καταρρεύσουν ξαφνικά, παγιδεύοντας ανθρώπους μέσα.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πόσα άτομα δουλέψατε σε αυτό το project;</div>
+      <div class="qa-a">Η ομάδα <strong>RoboticAlienz</strong> δούλεψε συλλογικά. Κάθε μέλος ανέλαβε διαφορετικό κομμάτι: firmware αισθητήρα, εφαρμογή κινητού, έρευνα, επαφή με ειδικούς και παρουσίαση.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Πότε ξεκινήσατε και πόσο καιρό δουλέψατε;</div>
+      <div class="qa-a">Ξεκινήσαμε το <strong>καλοκαίρι–φθινόπωρο 2025</strong> με έρευνα και συναντήσεις ειδικών. Το σύστημα εξελίχθηκε από την v1 ως την <strong>v5 (τρέχουσα)</strong> μέσα σε περίπου 6 μήνες εντατικής δουλειάς. Κάθε έκδοση έλυνε νέα προβλήματα που ανακαλύπταμε στη δοκιμή.</div>
+    </div>
+
+    <div class="qa-block">
+      <div class="qa-q">Χρειαζόμαστε internet για να λειτουργεί;</div>
+      <div class="qa-a"><strong>Όχι.</strong> Το σύστημα λειτουργεί πλήρως offline. Ο αισθητήρας στέλνει δεδομένα στο κινητό μέσω Bluetooth — χωρίς internet, χωρίς σύνδεση σε server. Αυτό είναι κρίσιμο γιατί οι περισσότερες ανασκαφές γίνονται σε απομακρυσμένα μέρη χωρίς σήμα.</div>
+    </div>
+
     <div class="stitle">Έρευνα &amp; Εντοπισμός Προβλήματος</div>
 
     <div class="qa-block">
@@ -1450,6 +1477,15 @@
     <div class="cs-card"><div class="cs-q">Πότε field test;</div><div class="cs-a">Σεπτέμβριο 2026, <strong>Τιθορέα (Καλαπόδι)</strong> με το Γερμανικό Αρχαιολογικό Ινστιτούτο.</div></div>
     <div class="cs-card"><div class="cs-q">Γιατί Flutter;</div><div class="cs-a">Ένας κώδικας → Android <em>και</em> iOS. APK σε οποιοδήποτε κινητό χωρίς App Store.</div></div>
     <div class="cs-card"><div class="cs-q">Τι είναι το GIS;</div><div class="cs-a"><strong>Offline χάρτης</strong> με GPS, σχεδίαση ορίων ανασκαφής, GeoJSON/Shapefile. Λειτουργεί χωρίς internet.</div></div>
+
+    <div class="cs-card"><div class="cs-q">Τι είναι το AncientVision;</div><div class="cs-a">Σύστημα <strong>ασφάλειας ανασκαφής</strong>: αισθητήρας 30€ + εφαρμογή κινητού που ειδοποιεί αρχαιολόγους πριν καταρρεύσει τάφρος.</div></div>
+    <div class="cs-card"><div class="cs-q">Χρειάζεται internet;</div><div class="cs-a"><strong>Όχι.</strong> Όλα γίνονται offline — Bluetooth αισθητήρα → κινητό. Ιδανικό για απομακρυσμένες ανασκαφές χωρίς σήμα.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι γίνεται όταν χτυπήσει συναγερμός;</div><div class="cs-a">Η εφαρμογή εμφανίζει <strong>κόκκινο overlay</strong>, ηχεί alert, και δίνει <em>συγκεκριμένη οδηγία</em> — π.χ. &quot;Βγείτε αμέσως&quot; ή &quot;Σταματήστε μηχανήματα 50m&quot;.</div></div>
+    <div class="cs-card"><div class="cs-q">Πόσο εύκολο είναι να το χρησιμοποιήσεις;</div><div class="cs-a">Πάτα ένα κουμπί για <strong>σύνδεση BLE</strong>. Ο αισθητήρας αρχίζει αυτόματα. Δεν χρειάζεται τεχνικές γνώσεις — σχεδιάστηκε για αρχαιολόγους, όχι μηχανικούς.</div></div>
+    <div class="cs-card"><div class="cs-q">Ποιος ο Σπύρος Μαρινάτος;</div><div class="cs-a">Σπουδαίος Έλληνας αρχαιολόγος, ανακαλυπτής της Θήρας. Σκοτώθηκε σε <strong>κατάρρευση τάφρου (1η Οκτ. 1974)</strong> — αυτό το περιστατικό μάς ενέπνευσε.</div></div>
+    <div class="cs-card"><div class="cs-q">Έχει δοκιμαστεί;</div><div class="cs-a"><strong>255 automated tests</strong> επαληθεύουν κάθε αλγόριθμο. Πρώτη πραγματική δοκιμή: Σεπτέμβριος 2026 στο Καλαπόδι.</div></div>
+    <div class="cs-card"><div class="cs-q">Τι κάνει η εφαρμογή εκτός από ασφάλεια;</div><div class="cs-a">Καταγραφή ευρημάτων με GPS, <strong>3D ανακατασκευή</strong> αντικειμένων, αναγνώριση νομισμάτων, offline χάρτης ανασκαφής.</div></div>
+    <div class="cs-card"><div class="cs-q">Γιατί το M5StickC Plus 2;</div><div class="cs-a">Κοστίζει <strong>~30€</strong>, έχει ενσωματωμένο IMU (αισθητήρα δόνησης), BLE, ESP32. Ιδανικό για γρήγορο prototyping χωρίς custom hardware.</div></div>
   </div>
   <div style="background:rgba(255,194,0,0.05);border:1px solid rgba(255,194,0,0.18);border-radius:4px;padding:9px 13px;margin-top:10px;">
     <p style="font-size:11px;color:rgba(255,194,0,0.85);line-height:1.55;">⚠ <strong>Μην αποστηθίσεις αυτές τις απαντήσεις αυτολεξεί.</strong> Κατανόησέ τες. Judge που ακούει "robotic" απάντηση ρωτάει follow-up. Αν καταλαβαίνεις, απαντάς σε οποιαδήποτε παραλλαγή.</p>
